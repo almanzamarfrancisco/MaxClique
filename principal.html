@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<title>Report the maximum clique</title>
+	<style>
+		html, body{
+			width: 98vw;
+			height: 98vh;
+		}
+		#graph{
+			background-color: #ccc;
+			width: 100%;
+			height: 100%;
+			min-height: 500px;
+			flex: 66.6%;
+		}
+		.node{
+			fill: #000;
+			stroke: #fff;
+			stroke-width: 2px;
+		}
+		.link{
+			fill: #000;
+			stroke: #777;
+			stroke-width: 2px;
+		}
+		#mainPanel{
+			display: flex;
+			padding: 2% 10%;
+		}
+		#controls{
+			flex: 33.3%;
+		}
+		header{
+			padding: 0 10%;
+		}
+	</style>
+</head>
+<body>
+	<!-- <header>
+		<div id="Inner">
+			<h1>Lorem Ipsum</h1>
+			<h4>"Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."</h4>
+			<h5>"There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain..."</h5>
+			<hr>
+			<div id="Content">
+				<div class="boxed">
+					<div id="lipsum">
+						<p>
+							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dapibus efficitur maximus. Integer ut nisl placerat, tincidunt magna vitae, finibus ex. Aliquam ut ornare purus. Suspendisse rhoncus malesuada ex, vitae rhoncus augue sollicitudin tincidunt. Ut vehicula cursus tristique. Morbi maximus fermentum odio, at euismod diam ultrices congue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus orci neque, lacinia et sapien nec, tempus fringilla diam. Cras sit amet ullamcorper est. Pellentesque laoreet dui non urna commodo aliquet eu non mi. Donec molestie quam quis massa vestibulum fringilla. Nunc eget ligula lacus.
+						</p>
+						<p>
+							Aliquam imperdiet porta mauris. Suspendisse nec ultrices est. Proin ornare, ex vel consectetur dignissim, urna nulla condimentum nunc, ac dictum libero elit vel nulla. Curabitur dui nibh, elementum in venenatis convallis, suscipit non eros. Donec nec est in augue posuere vehicula laoreet sed leo. Fusce id venenatis risus, at euismod ipsum. Phasellus elementum scelerisque laoreet.
+						</p>
+						<p>
+							Nam suscipit accumsan magna a commodo. Mauris vitae lectus vulputate, pellentesque erat eleifend, consectetur est. Vestibulum lectus lectus, tincidunt vitae euismod vitae, lobortis quis enim. Nunc venenatis ante id vehicula imperdiet. Sed a magna enim. Etiam viverra nibh metus. Mauris bibendum malesuada malesuada. Quisque porta ac magna a hendrerit. Pellentesque consequat elit eu sem eleifend, eu fringilla ipsum efficitur. Praesent at lobortis purus. Pellentesque ultricies maximus enim at accumsan. Aenean at lacus viverra, faucibus magna commodo, viverra lorem.
+						</p>
+						<p>
+							Donec consectetur lectus augue, nec feugiat justo ullamcorper ac. Phasellus sed consequat turpis. Curabitur ante velit, hendrerit quis ipsum id, volutpat lobortis risus. Fusce et mauris euismod, aliquam ex in, ornare nibh. Quisque nec tortor id enim dictum tempus ut a tortor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut tristique turpis enim, et tempor tellus pretium vitae. Nunc placerat lectus in lorem cursus ultricies. Maecenas neque eros, finibus eu convallis a, bibendum sed eros. Donec efficitur vehicula nisl ut euismod. Sed vulputate, dolor ultricies rutrum eleifend, orci nibh pulvinar ligula, in mollis ex est non ipsum. Maecenas dapibus maximus hendrerit. Sed congue dui sit amet augue facilisis porttitor. Donec in sem sapien.
+						</p>
+						<p>
+							Etiam laoreet dolor ante, sed molestie lorem egestas vel. Morbi finibus justo enim, malesuada varius nunc aliquam convallis. Nulla luctus sollicitudin ipsum, vehicula cursus purus aliquet ut. Quisque lacus tortor, fermentum id accumsan in, mattis porta ex. Ut rutrum lorem eros, quis gravida sem tincidunt a. Ut finibus cursus maximus. Quisque molestie ornare turpis quis rutrum.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header> -->
+	<div id="mainPanel">
+		<div id="controls">
+			Input:
+			<form>
+				<label>Number of nodes</label><br><br>
+				<label>Nodes description</label><br><br>
+				<label>Get from file</label><br><br>
+				<button>Random generation</button><br><br>
+				<button>Generate graph</button><br><br>
+			</form>
+		</div>
+		<div id="graph"></div>    
+	</div>
+	<script src="d3v4.1.1.min.js"></script>    
+	<script>
+		!(function(){
+			"use strict"
+
+			var width,height
+			var chartWidth, chartHeight
+			var margin
+			var svg = d3.select("#graph").append("svg")
+			var chartLayer = svg.append("g").classed("chartLayer", true)
+
+			main()
+
+			function main() {
+				var range = 10
+				var data = {
+					nodes:d3.range(0, range).map(function(index){
+						return {
+							label: "l" + index,
+							r:screen.width*0.01//~~d3.randomUniform(8, 28)()
+						}
+					}),
+					links:d3.range(0, range).map(function() {
+						return {
+							source:~~d3.randomUniform(range)(),
+							target:~~d3.randomUniform(range)()
+						}
+					})        
+				}
+
+				setSize(data)
+				drawChart(data)    
+			}
+
+			function setSize(data) {
+				width = document.querySelector("#graph").clientWidth
+				height = document.querySelector("#graph").clientHeight
+
+				margin = {top:0, left:0, bottom:0, right:0 }
+
+
+				chartWidth = width - (margin.left+margin.right)
+				chartHeight = height - (margin.top+margin.bottom)
+
+				svg.attr("width", width).attr("height", height)
+
+
+				chartLayer
+				.attr("width", chartWidth)
+				.attr("height", chartHeight)
+				.attr("transform", "translate("+[margin.left, margin.top]+")")
+			}
+
+			function drawChart(data) {
+
+				var simulation = d3.forceSimulation()
+				.force("link", d3.forceLink().id(function(d) { return d.index }))
+				.force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
+				.force("charge", d3.forceManyBody())
+				.force("center", d3.forceCenter(chartWidth / 2, chartHeight / 2))
+				.force("y", d3.forceY(0))
+				.force("x", d3.forceX(0))
+
+				var link = svg.append("g")
+				.attr("class", "link")
+				.selectAll("line")
+				.data(data.links)
+				.enter()
+				.append("line")
+				.attr("stroke", "black")
+
+				var node = svg.append("g")
+				.attr("class", "node")
+				.selectAll("circle")
+				.data(data.nodes)
+				.enter().append("circle")
+				.attr("r", function(d){  return d.r })
+				.call(d3.drag()
+					.on("start", dragstarted)
+					.on("drag", dragged)
+					.on("end", dragended));    
+
+
+				var ticked = function() {
+					link
+					.attr("x1", function(d) { return d.source.x; })
+					.attr("y1", function(d) { return d.source.y; })
+					.attr("x2", function(d) { return d.target.x; })
+					.attr("y2", function(d) { return d.target.y; });
+
+					node
+					.attr("cx", function(d) { return d.x; })
+					.attr("cy", function(d) { return d.y; });
+				}  
+
+				simulation
+				.nodes(data.nodes)
+				.on("tick", ticked);
+
+				simulation.force("link")
+				.links(data.links);    
+
+
+
+				function dragstarted(d) {
+					if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+					d.fx = d.x;
+					d.fy = d.y;
+				}
+
+				function dragged(d) {
+					d.fx = d3.event.x;
+					d.fy = d3.event.y;
+				}
+
+				function dragended(d) {
+					if (!d3.event.active) simulation.alphaTarget(0);
+					d.fx = null;
+					d.fy = null;
+				} 
+
+			}
+		}());
+	</script>    
+</body>
+</html>
