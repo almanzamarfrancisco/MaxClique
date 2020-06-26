@@ -5,15 +5,20 @@ var chartWidth, chartHeight
 var margin
 var svg = d3.select("#graph").append("svg")
 var chartLayer = svg.append("g").classed("chartLayer", true)
+var nodesColor = "#8f1f96de";
+var nodesMouseOverFillColor = "#467fffc9";
+var nodesMouseOverNeighborsFillColor = "#00afb7bf";
+var globalData;
 main()
 
 function main() {
 	var range = 12
-	var data = {
+	globalData = {
 		nodes: d3.range(0, range).map(function(index){
 			return {
+				index: index,
 				label: "node" + index,
-						r:screen.width*0.015//~~d3.randomUniform(8, 28)()// Circles radio 
+						r:screen.width*0.025//~~d3.randomUniform(8, 28)()// Circles radio 
 					}
 				}),
 		links: d3.range(0, range).map(function() {
@@ -23,9 +28,9 @@ function main() {
 					}
 				})
 	}
-	verifyAllNodesAreConnected(data, range)
-	setSize(data)
-	drawChart(data) 
+	verifyAllNodesAreConnected(globalData, range)
+	setSize(globalData)
+	drawChart(globalData)
 }
 
 function setSize(data) {
@@ -45,7 +50,6 @@ function setSize(data) {
 		.attr("transform", "translate("+[margin.left, margin.top]+")")
 }
 function drawChart(data) {
-
 	var simulation = d3.forceSimulation()
 		.force("link", d3.forceLink().id(function(d) { return d.index }))
 		.force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
@@ -53,21 +57,23 @@ function drawChart(data) {
 		.force("center", d3.forceCenter(chartWidth / 2, chartHeight / 2))
 		.force("y", d3.forceY(0))
 		.force("x", d3.forceX(0))
-
 	var link = svg.append("g")
 		.attr("class", "link")
 		.selectAll("line")
 		.data(data.links)
 		.enter()
 		.append("line")
-		// .attr("stroke", "black")
-	var node = svg.append("g")// nodes configuration
+		.attr("class", "link")
+		.attr("id", function(d){ return "s" + d.source + "t" + d.target })
+	var node = svg.append("g")
 		.attr("class", "node")
 		.selectAll("circle")
 		.data(data.nodes)
 		.enter().append("circle")
 		.attr("r", function(d){  return d.r })
 		.attr("label", function(d){  return d.label })
+		.attr("id", function(d){  return d.label })
+		.attr("index", function(d){  return d.index })
 		.call(d3.drag()
 			.on("start", dragstarted)
 			.on("drag", dragged)
@@ -75,7 +81,6 @@ function drawChart(data) {
 			)
 		.on("mouseover", handleMouseOver)
 		.on("mouseout", handleMouseOut)
-
 	var ticked = function() {
 		link
 			.attr("x1", function(d) { return d.source.x })
@@ -87,11 +92,9 @@ function drawChart(data) {
 			.attr("cx", function(d) { return d.x })
 			.attr("cy", function(d) { return d.y })
 	}  
-
 	simulation
 		.nodes(data.nodes)
 		.on("tick", ticked)
-
 	simulation.force("link")
 		.links(data.links)  
 
@@ -119,17 +122,12 @@ function verifyAllNodesAreConnected(data, range){
 	}
 	data.links.map(function(link, index){
 		if( complement.csources.includes(link.source) ){
-			// console.log("source: ", link.source, complement.csources.includes(link.source))
 			complement.csources.splice( complement.csources.indexOf(link.source), 1)
 		}
 		if( complement.ctargets.includes(link.target) ){
-			// console.log("target: ", link.target, complement.ctargets.includes(link.target))
 			complement.ctargets.splice( complement.ctargets.indexOf(link.target), 1)
 		}
 	})
-	// console.log('csources: ' +  complement.csources)
-	// console.log('ctargets: ' +  complement.ctargets)
-	// console.log(data.links)
 	complement.csources.map(function(source){
 		data.links.push({
 			source: source,
@@ -146,20 +144,42 @@ function verifyAllNodesAreConnected(data, range){
 // Create Event Handlers for mouse
 function handleMouseOver(d, i) {
 	let v = d3.select(this)
-		.attr('fill', 'orange')
-	svg.append("text")
+		.attr('fill', nodesMouseOverFillColor)
+	svg.append("text") // Name label text
 		.attr('id', 'text' + v.attr('label'))
 		.attr('label', 'textNode' + v.attr('label'))
 		.attr('class', 'textNode')
 		.attr('x', function() { return d.x - 15 })
 		.attr('y', function() { return d.y  })
 		.text(function() {
-	return v.attr('label').charAt(0).toUpperCase() + v.attr('label').slice(1);
-	})
+			return v.attr('label').charAt(0).toUpperCase() + v.attr('label').slice(1);
+		})
+	fillNeighborhoodNodes(v.attr('index'), globalData, nodesMouseOverNeighborsFillColor);
 }
 function handleMouseOut(d, i) {
 	let v = d3.select(this) // select node
-	d3.select(this).attr('fill', '#8f1f96de')
+	d3.select(this).attr('fill', nodesColor)
 	d3.select('#text' + v.attr('label')).remove(); // Remove text location
+	fillNeighborhoodNodes(v.attr('index'), globalData, nodesColor);
+}
+function getNeighborhoodLabels(nodeIndex, data){
+	let nodeTargets = data.links.filter(function(link){
+		return link.source.index == nodeIndex
+	})
+	let nodeSources = data.links.filter(function(link){
+		return link.target.index == nodeIndex
+	})
+	return [
+		...nodeTargets.map(function(node){ return node.target.label }),
+		...nodeSources.map(function(node){ return node.source.label })
+	]
+}
+function fillNeighborhoodNodes(nodeIndex, data, color){
+	let nodeNeighborsLabels = getNeighborhoodLabels(nodeIndex, data)
+	// console.log(nodeNeighborsLabels)
+	nodeNeighborsLabels.map(function(neighborLabel){
+		d3.select('#' + neighborLabel)
+			.attr('fill', color)
+	})
 }
 }());

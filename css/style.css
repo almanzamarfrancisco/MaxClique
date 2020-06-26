@@ -20,9 +20,9 @@ html, body{
 	stroke-width: 3px;
 }
 .link{
-	fill: #000;
-	stroke: #777;
-	stroke-width: 2px;
+	fill: #777;
+	stroke: #000;
+	stroke-width: 3px;
 }
 #mainPanel{
 	display: flex;
