@@ -34,68 +34,66 @@ function setSize(data) {
 
 	margin = {top:0, left:0, bottom:0, right:0 }
 
-
 	chartWidth = width - (margin.left+margin.right)
 	chartHeight = height - (margin.top+margin.bottom)
 
 	svg.attr("width", width).attr("height", height)
 
-
 	chartLayer
-	.attr("width", chartWidth)
-	.attr("height", chartHeight)
-	.attr("transform", "translate("+[margin.left, margin.top]+")")
+		.attr("width", chartWidth)
+		.attr("height", chartHeight)
+		.attr("transform", "translate("+[margin.left, margin.top]+")")
 }
 function drawChart(data) {
 
 	var simulation = d3.forceSimulation()
-	.force("link", d3.forceLink().id(function(d) { return d.index }))
-	.force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
-	.force("charge", d3.forceManyBody())
-	.force("center", d3.forceCenter(chartWidth / 2, chartHeight / 2))
-	.force("y", d3.forceY(0))
-	.force("x", d3.forceX(0))
+		.force("link", d3.forceLink().id(function(d) { return d.index }))
+		.force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
+		.force("charge", d3.forceManyBody())
+		.force("center", d3.forceCenter(chartWidth / 2, chartHeight / 2))
+		.force("y", d3.forceY(0))
+		.force("x", d3.forceX(0))
 
 	var link = svg.append("g")
-	.attr("class", "link")
-	.selectAll("line")
-	.data(data.links)
-	.enter()
-	.append("line")
-	// .attr("stroke", "black")
+		.attr("class", "link")
+		.selectAll("line")
+		.data(data.links)
+		.enter()
+		.append("line")
+		// .attr("stroke", "black")
 	var node = svg.append("g")// nodes configuration
-	.attr("class", "node")
-	.selectAll("circle")
-	.data(data.nodes)
-	.enter().append("circle")
-	.attr("r", function(d){  return d.r })
-	.attr("label", function(d){  return d.label })
-	.call(d3.drag()
-		.on("start", dragstarted)
-		.on("drag", dragged)
-		.on("end", dragended)
-		)
-	.on("mouseover", handleMouseOver)
-	.on("mouseout", handleMouseOut)
+		.attr("class", "node")
+		.selectAll("circle")
+		.data(data.nodes)
+		.enter().append("circle")
+		.attr("r", function(d){  return d.r })
+		.attr("label", function(d){  return d.label })
+		.call(d3.drag()
+			.on("start", dragstarted)
+			.on("drag", dragged)
+			.on("end", dragended)
+			)
+		.on("mouseover", handleMouseOver)
+		.on("mouseout", handleMouseOut)
 
 	var ticked = function() {
 		link
-		.attr("x1", function(d) { return d.source.x })
-		.attr("y1", function(d) { return d.source.y })
-		.attr("x2", function(d) { return d.target.x })
-		.attr("y2", function(d) { return d.target.y })
+			.attr("x1", function(d) { return d.source.x })
+			.attr("y1", function(d) { return d.source.y })
+			.attr("x2", function(d) { return d.target.x })
+			.attr("y2", function(d) { return d.target.y })
 
 		node
-		.attr("cx", function(d) { return d.x })
-		.attr("cy", function(d) { return d.y })
+			.attr("cx", function(d) { return d.x })
+			.attr("cy", function(d) { return d.y })
 	}  
 
 	simulation
-	.nodes(data.nodes)
-	.on("tick", ticked)
+		.nodes(data.nodes)
+		.on("tick", ticked)
 
 	simulation.force("link")
-	.links(data.links)  
+		.links(data.links)  
 
 	function dragstarted(d) {
 		if (!d3.event.active) simulation.alphaTarget(0.3).restart()
@@ -148,17 +146,17 @@ function verifyAllNodesAreConnected(data, range){
 // Create Event Handlers for mouse
 function handleMouseOver(d, i) {
 	let v = d3.select(this)
-	.attr('fill', 'orange')
+		.attr('fill', 'orange')
 	svg.append("text")
-	.attr('id', 'text' + v.attr('label'))
-	.attr('label', 'textNode' + v.attr('label'))
-	.attr('x', function() { return d.x - 30 })
-	.attr('y', function() { return d.y - 15 })
-	.text(function() {
-		return v.attr('label').charAt(0).toUpperCase() + v.attr('label').slice(1);
+		.attr('id', 'text' + v.attr('label'))
+		.attr('label', 'textNode' + v.attr('label'))
+		.attr('class', 'textNode')
+		.attr('x', function() { return d.x - 15 })
+		.attr('y', function() { return d.y  })
+		.text(function() {
+	return v.attr('label').charAt(0).toUpperCase() + v.attr('label').slice(1);
 	})
 }
-
 function handleMouseOut(d, i) {
 	let v = d3.select(this) // select node
 	d3.select(this).attr('fill', '#8f1f96de')

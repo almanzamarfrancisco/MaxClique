@@ -34,3 +34,7 @@ html, body{
 header{
 	padding: 0 10%;
 }
+.textNode{
+	color: #ccc;
+	font-size: 1.1em;
+}
