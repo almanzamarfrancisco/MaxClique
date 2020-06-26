@@ -31,7 +31,7 @@ function main() {
 	verifyAllNodesAreConnected(globalData, range)
 	setSize(globalData)
 	drawChart(globalData)
-	getAllNodesNeighborhood(globalData) // Second option - preload
+	getAllNodesNeighborhood(globalData) // Fill neighborhood second option - preload
 
 }
 
@@ -147,24 +147,17 @@ function verifyAllNodesAreConnected(data, range){
 function handleMouseOver(d, i) {
 	let v = d3.select(this)
 		.attr('fill', nodesMouseOverFillColor)
-	svg.append("text") // Name label text
-		.attr('id', 'text' + v.attr('label'))
-		.attr('label', 'textNode' + v.attr('label'))
-		.attr('class', 'textNode')
-		.attr('x', function() { return d.x - 15 })
-		.attr('y', function() { return d.y  })
-		.text(function() {
-			return v.attr('label').charAt(0).toUpperCase() + v.attr('label').slice(1);
-		})
+	showNodeLabelText(v.attr('label'))
 	// fillNeighborhoodNodes(v.attr('index'), globalData, nodesMouseOverNeighborsFillColor); // first option
-	fillNeighborhoodNodes(v.attr('index'), nodesMouseOverNeighborsFillColor); // second option
+	fillNeighborhoodNodes(v.attr('index'), nodesMouseOverNeighborsFillColor) // Fill neighborhood second option
 }
 function handleMouseOut(d, i) {
 	let v = d3.select(this) // select node
 	d3.select(this).attr('fill', nodesColor)
-	d3.select('#text' + v.attr('label')).remove(); // Remove text location
-	// fillNeighborhoodNodes(v.attr('index'), globalData, nodesColor); // first option
-	fillNeighborhoodNodes(v.attr('index'), nodesColor); // second option
+	d3.select('#text' + v.attr('label')).remove() // Remove text location
+	// fillNeighborhoodNodes(v.attr('index'), globalData, nodesColor); // Fill neighborhood first option
+	fillNeighborhoodNodes(v.attr('index'), nodesColor) // second option
+	d3.selectAll('.textNode').remove()
 }
 function getNeighborhoodLabels(nodeIndex, data){
 	let nodeTargets = data.links.filter(function(link){
@@ -178,7 +171,7 @@ function getNeighborhoodLabels(nodeIndex, data){
 		...nodeSources.map(function(node){ return node.source.label })
 	]
 }
-/*function fillNeighborhoodNodes(nodeIndex, data, color){// First option - detonate to over
+/*function fillNeighborhoodNodes(nodeIndex, data, color){// Fill neighborhood first option - detonate to over
 	let nodeNeighborsLabels = getNeighborhoodLabels(nodeIndex, data)
 	// console.log(nodeNeighborsLabels)
 	nodeNeighborsLabels.map(function(neighborLabel){
@@ -186,13 +179,15 @@ function getNeighborhoodLabels(nodeIndex, data){
 			.attr('fill', color)
 	})
 }*/
-function fillNeighborhoodNodes(nodeIndex, color){// Second option - preloaded
-	let neighborhood = d3.select('#node' + nodeIndex)
-			.attr('neighborhood').split(",")
-	neighborhood.map(function(neighborLabel){
-		d3.select('#' + neighborLabel)
-			.attr('fill', color)
-	})
+function fillNeighborhoodNodes(nodeIndex, color){// Fill neighborhood second option - preloaded
+	let v = d3.select('#node' + nodeIndex)
+	let neighborhood = v.attr('neighborhood').split(',')
+	if(neighborhood.length)
+		neighborhood.map(function(neighborLabel){
+			d3.select('#' + neighborLabel)
+				.attr('fill', color)
+			showNodeLabelText(neighborLabel)
+		})
 }
 function getAllNodesNeighborhood(data){
 	data.nodes.map(function(node){
@@ -200,5 +195,17 @@ function getAllNodesNeighborhood(data){
 		d3.select('#' + node.label)
 			.attr('neighborhood', labels.toString())
 	})
+}
+function showNodeLabelText(nodeLabel){
+	let n = d3.select('#' + nodeLabel)
+	svg.append("text") // Name label text
+		.attr('id', 'text' + n.attr('label'))
+		.attr('label', 'textNode' + n.attr('label'))
+		.attr('class', 'textNode')
+		.attr('x', function() { return n.attr('cx') - 15 })
+		.attr('y', function() { return n.attr('cy') })
+		.text(function() {
+			return n.attr('label').charAt(0).toUpperCase() + n.attr('label').slice(1)
+		})
 }
 }());
