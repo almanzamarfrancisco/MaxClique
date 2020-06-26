@@ -31,6 +31,8 @@ function main() {
 	verifyAllNodesAreConnected(globalData, range)
 	setSize(globalData)
 	drawChart(globalData)
+	getAllNodesNeighborhood(globalData) // Second option - preload
+
 }
 
 function setSize(data) {
@@ -154,13 +156,15 @@ function handleMouseOver(d, i) {
 		.text(function() {
 			return v.attr('label').charAt(0).toUpperCase() + v.attr('label').slice(1);
 		})
-	fillNeighborhoodNodes(v.attr('index'), globalData, nodesMouseOverNeighborsFillColor);
+	// fillNeighborhoodNodes(v.attr('index'), globalData, nodesMouseOverNeighborsFillColor); // first option
+	fillNeighborhoodNodes(v.attr('index'), nodesMouseOverNeighborsFillColor); // second option
 }
 function handleMouseOut(d, i) {
 	let v = d3.select(this) // select node
 	d3.select(this).attr('fill', nodesColor)
 	d3.select('#text' + v.attr('label')).remove(); // Remove text location
-	fillNeighborhoodNodes(v.attr('index'), globalData, nodesColor);
+	// fillNeighborhoodNodes(v.attr('index'), globalData, nodesColor); // first option
+	fillNeighborhoodNodes(v.attr('index'), nodesColor); // second option
 }
 function getNeighborhoodLabels(nodeIndex, data){
 	let nodeTargets = data.links.filter(function(link){
@@ -174,12 +178,27 @@ function getNeighborhoodLabels(nodeIndex, data){
 		...nodeSources.map(function(node){ return node.source.label })
 	]
 }
-function fillNeighborhoodNodes(nodeIndex, data, color){
+/*function fillNeighborhoodNodes(nodeIndex, data, color){// First option - detonate to over
 	let nodeNeighborsLabels = getNeighborhoodLabels(nodeIndex, data)
 	// console.log(nodeNeighborsLabels)
 	nodeNeighborsLabels.map(function(neighborLabel){
 		d3.select('#' + neighborLabel)
 			.attr('fill', color)
+	})
+}*/
+function fillNeighborhoodNodes(nodeIndex, color){// Second option - preloaded
+	let neighborhood = d3.select('#node' + nodeIndex)
+			.attr('neighborhood').split(",")
+	neighborhood.map(function(neighborLabel){
+		d3.select('#' + neighborLabel)
+			.attr('fill', color)
+	})
+}
+function getAllNodesNeighborhood(data){
+	data.nodes.map(function(node){
+		let labels = getNeighborhoodLabels(node.index, data)
+		d3.select('#' + node.label)
+			.attr('neighborhood', labels.toString())
 	})
 }
 }());
