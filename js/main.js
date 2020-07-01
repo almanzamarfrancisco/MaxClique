@@ -8,6 +8,7 @@ var chartLayer = svg.append("g").classed("chartLayer", true)
 var nodesColor = "#8f1f96de";
 var nodesMouseOverFillColor = "#467fffc9";
 var nodesMouseOverNeighborsFillColor = "#00afb7bf";
+var cliqueColor = "#1dff02c7";
 var globalData;
 main()
 
@@ -32,7 +33,9 @@ function main() {
 	setSize(globalData)
 	drawChart(globalData)
 	getAllNodesNeighborhood(globalData) // Fill neighborhood second option - preload
-
+	let R = [] // Response
+	let X = [] // Auxiliar
+	BronKerbosh(R, [...globalData.nodes], X)
 }
 
 function setSize(data) {
@@ -192,6 +195,9 @@ function fillNeighborhoodNodes(nodeIndex, color){// Fill neighborhood second opt
 function getAllNodesNeighborhood(data){
 	data.nodes.map(function(node){
 		let labels = getNeighborhoodLabels(node.index, data)
+		node.neighbors = labels.map(function(label){
+			return parseInt(label.replace('node',''))
+		});
 		d3.select('#' + node.label)
 			.attr('neighborhood', labels.toString())
 	})
@@ -207,5 +213,55 @@ function showNodeLabelText(nodeLabel){
 		.text(function() {
 			return n.attr('label').charAt(0).toUpperCase() + n.attr('label').slice(1)
 		})
+}
+function getNeighbors(index){
+	return globalData.nodes[index].neighbors.map(function(nodeIndex){
+		return globalData.nodes[nodeIndex]
+	})
+}
+function intersection(A, B){
+	if(!A.length || !B.length)
+		return []
+	let a = A.map(function(node){
+		return node.index
+	})
+	let b = B.map(function(node){
+		return node.index
+	})
+	let intersectionIndexes = a.filter(function(index){
+		return b.includes(index)
+	})
+	return intersectionIndexes.map(function(index){
+		return A[index]
+	})
+}
+function fillNodes(R){
+	console.log(R)
+	if(!R)
+		return
+	R.map(function(node){
+		d3.select('#node' + node.index)
+			.attr('fill', cliqueColor)
+	})
+}
+function BronKerbosh(R, P, X){
+	if(P.length == X.length == 0){
+		// console.log("As the maximal clique: ", R)
+		fillNodes(R)
+	}
+	for(let n of P){
+		let m = P.pop()
+		if(!m)
+			break
+		// console.log('execute', m)
+		R.push(m)
+		P = intersection(P, getNeighbors(m.index))
+		X = intersection(X, getNeighbors(m.index))
+		// console.log(R)
+		// console.log(P)
+		// console.log(X)
+		BronKerbosh(R, P, X)
+		X = X.push(n)
+	}
 }
 }());
