@@ -11,10 +11,11 @@ var nodesMouseOverNeighborsFillColor = "#00afb7bf";
 var cliqueColor = "#1dff02c7";
 var globalData;
 var call = 0 //Calling counter
+var foundCliques = []
 main()
 
 function main() {
-	var range = 4
+	var range = 12
 	globalData = {// Place random set
 		nodes: d3.range(0, range).map(function(index){// Place nodes
 			return {
@@ -37,6 +38,7 @@ function main() {
 	let R = [] // Response
 	let X = [] // Auxiliar
 	BronKerbosh(R, [...globalData.nodes], X)
+	console.log(foundCliques)
 }
 
 function verifyAllNodesAreConnected(range){
@@ -150,13 +152,15 @@ function drawChart(data) {
 // Create Event Handlers for mouse
 function handleMouseOver(d, i) {
 	let v = d3.select(this)
-		.attr('fill', nodesMouseOverFillColor)
+	if(!v.attr('clique-part'))
+		v.attr('fill', nodesMouseOverFillColor)
 	showNodeLabelText(v.attr('label'))
 	fillNeighborhoodNodes(v.attr('index'), nodesMouseOverNeighborsFillColor) // Fill neighborhood second option
 }
 function handleMouseOut(d, i) {
 	let v = d3.select(this) // select node
-	d3.select(this).attr('fill', nodesColor)
+	if(!v.attr('clique-part'))
+		v.attr('fill', nodesColor)
 	d3.select('#text' + v.attr('label')).remove() // Remove text location
 	fillNeighborhoodNodes(v.attr('index'), nodesColor) // second option
 	d3.selectAll('.textNode').remove()
@@ -189,8 +193,9 @@ function fillNeighborhoodNodes(nodeIndex, color){// Fill neighborhood
 	let neighborhood = v.attr('neighborhood').split(',')
 	if(neighborhood.length)
 		neighborhood.map(function(neighborLabel){
-			d3.select('#' + neighborLabel)
-				.attr('fill', color)
+			let node = d3.select('#' + neighborLabel)
+			if(!node.attr('clique-part'))
+				node.attr('fill', color)
 			showNodeLabelText(neighborLabel)
 		})
 }
@@ -249,6 +254,7 @@ function fillNodes(R, color = cliqueColor){
 	R.map(function(node){
 		d3.select('#node' + node.index)
 			.attr('fill', color)
+			.attr('clique-part',true)
 	})
 }
 function dropElement(G, n){
@@ -262,6 +268,7 @@ function BronKerbosh(R, P, X){
 	if(P.length === 0 && X.length === 0 && R.length >= 3){
 		// console.log("As the maximal clique: ", R)
 		fillNodes(R)
+		foundCliques.push(R)
 	}
 	else
 		for(let n of P){
