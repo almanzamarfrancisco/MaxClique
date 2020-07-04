@@ -1,6 +1,6 @@
 !(function(){
 "use strict"
-var width,height
+var width, height
 var chartWidth, chartHeight
 var margin
 var svg = d3.select("#graph").append("svg")
@@ -10,35 +10,62 @@ var nodesMouseOverFillColor = "#467fffc9";
 var nodesMouseOverNeighborsFillColor = "#00afb7bf";
 var cliqueColor = "#1dff02c7";
 var globalData;
+var call = 0 //Calling counter
 main()
 
 function main() {
-	var range = 12
-	globalData = {
-		nodes: d3.range(0, range).map(function(index){
+	var range = 4
+	globalData = {// Place random set
+		nodes: d3.range(0, range).map(function(index){// Place nodes
 			return {
 				index: index,
 				label: "node" + index,
 						r:screen.width*0.025//~~d3.randomUniform(8, 28)()// Circles radio 
 					}
 				}),
-		links: d3.range(0, range).map(function() {
+		links: d3.range(0, range).map(function() {// Place random link
 			return {
 						source:~~d3.randomUniform(range)(), // Random links assignments
 						target:~~d3.randomUniform(range)() // Random links assignments
 					}
 				})
 	}
-	verifyAllNodesAreConnected(globalData, range)
-	setSize(globalData)
+	verifyAllNodesAreConnected(range)
+	setSize()
 	drawChart(globalData)
-	getAllNodesNeighborhood(globalData) // Fill neighborhood second option - preload
+	getAllNodesNeighborhood() // Fill neighborhood
 	let R = [] // Response
 	let X = [] // Auxiliar
 	BronKerbosh(R, [...globalData.nodes], X)
 }
 
-function setSize(data) {
+function verifyAllNodesAreConnected(range){
+	let  complement = { // unadded items  complement used for verifying all nodes are connected
+		csources: [...Array(range).keys()],// A container of all available numbers
+		ctargets: [...Array(range).keys()],// A container of all available numbers
+	}
+	globalData.links.map(function(link, index){
+		if( complement.csources.includes(link.source) ){
+			complement.csources.splice( complement.csources.indexOf(link.source), 1)
+		}
+		if( complement.ctargets.includes(link.target) ){
+			complement.ctargets.splice( complement.ctargets.indexOf(link.target), 1)
+		}
+	})
+	complement.csources.map(function(source){
+		globalData.links.push({
+			source: source,
+			target:~~d3.randomUniform(range)()
+		})
+	})
+	complement.ctargets.map(function(target){
+		globalData.links.push({
+			source: ~~d3.randomUniform(range)(),
+			target: target
+		})
+	})
+}
+function setSize() {
 	width = document.querySelector("#graph").clientWidth
 	height = document.querySelector("#graph").clientHeight
 
@@ -120,47 +147,30 @@ function drawChart(data) {
 		d.fy = null
 	} 
 }
-function verifyAllNodesAreConnected(data, range){
-	let  complement = { // unadded items  complement used for verifying all nodes are connected
-		csources: [...Array(range).keys()],// A container of all available numbers
-		ctargets: [...Array(range).keys()],// A container of all available numbers
-	}
-	data.links.map(function(link, index){
-		if( complement.csources.includes(link.source) ){
-			complement.csources.splice( complement.csources.indexOf(link.source), 1)
-		}
-		if( complement.ctargets.includes(link.target) ){
-			complement.ctargets.splice( complement.ctargets.indexOf(link.target), 1)
-		}
-	})
-	complement.csources.map(function(source){
-		data.links.push({
-			source: source,
-			target:~~d3.randomUniform(range)()
-		})
-	})
-	complement.ctargets.map(function(target){
-		data.links.push({
-			source: ~~d3.randomUniform(range)(),
-			target: target
-		})
-	})
-}
 // Create Event Handlers for mouse
 function handleMouseOver(d, i) {
 	let v = d3.select(this)
 		.attr('fill', nodesMouseOverFillColor)
 	showNodeLabelText(v.attr('label'))
-	// fillNeighborhoodNodes(v.attr('index'), globalData, nodesMouseOverNeighborsFillColor); // first option
 	fillNeighborhoodNodes(v.attr('index'), nodesMouseOverNeighborsFillColor) // Fill neighborhood second option
 }
 function handleMouseOut(d, i) {
 	let v = d3.select(this) // select node
 	d3.select(this).attr('fill', nodesColor)
 	d3.select('#text' + v.attr('label')).remove() // Remove text location
-	// fillNeighborhoodNodes(v.attr('index'), globalData, nodesColor); // Fill neighborhood first option
 	fillNeighborhoodNodes(v.attr('index'), nodesColor) // second option
 	d3.selectAll('.textNode').remove()
+}
+//
+function getAllNodesNeighborhood(){
+	globalData.nodes.map(function(node){
+		let labels = getNeighborhoodLabels(node.index, globalData)
+		node.neighbors = labels.map(function(label){
+			return parseInt(label.replace('node',''))
+		});
+		d3.select('#' + node.label)
+			.attr('neighborhood', labels.toString())
+	})
 }
 function getNeighborhoodLabels(nodeIndex, data){
 	let nodeTargets = data.links.filter(function(link){
@@ -174,15 +184,7 @@ function getNeighborhoodLabels(nodeIndex, data){
 		...nodeSources.map(function(node){ return node.source.label })
 	]
 }
-/*function fillNeighborhoodNodes(nodeIndex, data, color){// Fill neighborhood first option - detonate to over
-	let nodeNeighborsLabels = getNeighborhoodLabels(nodeIndex, data)
-	// console.log(nodeNeighborsLabels)
-	nodeNeighborsLabels.map(function(neighborLabel){
-		d3.select('#' + neighborLabel)
-			.attr('fill', color)
-	})
-}*/
-function fillNeighborhoodNodes(nodeIndex, color){// Fill neighborhood second option - preloaded
+function fillNeighborhoodNodes(nodeIndex, color){// Fill neighborhood 
 	let v = d3.select('#node' + nodeIndex)
 	let neighborhood = v.attr('neighborhood').split(',')
 	if(neighborhood.length)
@@ -191,16 +193,6 @@ function fillNeighborhoodNodes(nodeIndex, color){// Fill neighborhood second opt
 				.attr('fill', color)
 			showNodeLabelText(neighborLabel)
 		})
-}
-function getAllNodesNeighborhood(data){
-	data.nodes.map(function(node){
-		let labels = getNeighborhoodLabels(node.index, data)
-		node.neighbors = labels.map(function(label){
-			return parseInt(label.replace('node',''))
-		});
-		d3.select('#' + node.label)
-			.attr('neighborhood', labels.toString())
-	})
 }
 function showNodeLabelText(nodeLabel){
 	let n = d3.select('#' + nodeLabel)
@@ -215,13 +207,26 @@ function showNodeLabelText(nodeLabel){
 		})
 }
 function getNeighbors(index){
-	return globalData.nodes[index].neighbors.map(function(nodeIndex){
+	let neighborsIndexes = globalData.nodes[index].neighbors.map(function(nodeIndex){
+		return nodeIndex
+	})
+	let deletedDuplicates = neighborsIndexes.reduce(function(unique, item){
+		return unique.includes(item) ? unique : [...unique, item]
+	}, [])
+	// delete node indexes which are same of index
+	deletedDuplicates = deletedDuplicates.filter(function(nodeIndex){
+		return nodeIndex != index
+	})
+	let result = deletedDuplicates.map(function(nodeIndex){
 		return globalData.nodes[nodeIndex]
 	})
+	// console.log(result)
+	return result
 }
 function intersection(A, B){
-	if(!A.length || !B.length)
+	if(!A || !B || !A.length || !B.length)
 		return []
+	// console.log(A, B)
 	let a = A.map(function(node){
 		return node.index
 	})
@@ -231,37 +236,48 @@ function intersection(A, B){
 	let intersectionIndexes = a.filter(function(index){
 		return b.includes(index)
 	})
-	return intersectionIndexes.map(function(index){
-		return A[index]
+	let result = intersectionIndexes.map(function(index){
+		return globalData.nodes[index]
 	})
+	// console.log(result)
+	return result
 }
-function fillNodes(R){
-	console.log(R)
+function fillNodes(R, color = cliqueColor){
+	// console.log(R, color)
 	if(!R)
 		return
 	R.map(function(node){
 		d3.select('#node' + node.index)
-			.attr('fill', cliqueColor)
+			.attr('fill', color)
+	})
+}
+function dropElement(G, n){
+	return G.filter(function(node){
+		return node.index !== n.index
 	})
 }
 function BronKerbosh(R, P, X){
-	if(P.length == X.length == 0){
+	call++// calling counter
+	// console.log(R, P, X)
+	if(P.length === 0 && X.length === 0 && R.length >= 3){
 		// console.log("As the maximal clique: ", R)
 		fillNodes(R)
 	}
-	for(let n of P){
-		let m = P.pop()
-		if(!m)
-			break
-		// console.log('execute', m)
-		R.push(m)
-		P = intersection(P, getNeighbors(m.index))
-		X = intersection(X, getNeighbors(m.index))
-		// console.log(R)
-		// console.log(P)
-		// console.log(X)
-		BronKerbosh(R, P, X)
-		X = X.push(n)
-	}
+	else
+		for(let n of P){
+			P = dropElement(P, n)
+			// console.log("new P")
+			// console.log(P)
+			let r = [...R, n]
+			// console.log(r)
+			let neighbors = getNeighbors(n.index)
+			let p = intersection([...P], neighbors)
+			// console.log(p)
+			let x = intersection([...X], neighbors)
+			// console.log(x)
+			// break;
+			BronKerbosh(r, p, x)
+			X = [...X, n]
+		}
 }
 }());
