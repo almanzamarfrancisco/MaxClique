@@ -15,7 +15,7 @@ var foundCliques = []
 main()
 
 function main() {
-	var range = 20
+	var range = 12
 	globalData = {// Place random set
 		nodes: d3.range(0, range).map(function(index){// Place nodes
 			return {
