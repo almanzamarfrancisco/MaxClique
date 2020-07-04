@@ -15,7 +15,7 @@ var foundCliques = []
 main()
 
 function main() {
-	var range = 12
+	var range = 20
 	globalData = {// Place random set
 		nodes: d3.range(0, range).map(function(index){// Place nodes
 			return {
@@ -39,6 +39,12 @@ function main() {
 	let X = [] // Auxiliar
 	BronKerbosh(R, [...globalData.nodes], X)
 	console.log(foundCliques)
+	let maximalClique = []
+	foundCliques.map(function(clique){
+		if(clique.length > maximalClique.length)
+			maximalClique = clique
+	})
+	fillNodes(maximalClique, '#08e5fdb5')
 }
 
 function verifyAllNodesAreConnected(range){
@@ -265,10 +271,12 @@ function dropElement(G, n){
 function BronKerbosh(R, P, X){
 	call++// calling counter
 	// console.log(R, P, X)
-	if(P.length === 0 && X.length === 0 && R.length >= 3){
-		// console.log("As the maximal clique: ", R)
-		fillNodes(R)
-		foundCliques.push(R)
+	if(P.length === 0 && X.length === 0){
+		if(R.length > 2){
+			// console.log("As the maximal clique: ", R)
+			fillNodes(R)
+			foundCliques.push(R)
+		}
 	}
 	else
 		for(let n of P){
