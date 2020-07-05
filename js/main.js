@@ -12,7 +12,7 @@
 	var globalData;
 	var call = 0 //Calling counter
 	var foundCliques = []
-	var range = 20
+	var range = 4
 	main()
 
 	function main() {
