@@ -12,7 +12,7 @@ html, body{
 	width: 100%;
 	height: 100%;
 	min-height: 500px;
-	flex: 66.6%;
+	flex: 80%;
 }
 .node{
 	fill: #8f1f96de;
@@ -29,7 +29,7 @@ html, body{
 	padding: 2% 10%;
 }
 #controls{
-	flex: 33.3%;
+	flex: 20%;
 }
 header{
 	padding: 0 10%;
@@ -38,4 +38,18 @@ header{
 	color: #ccc;
 	font-size: 1.1em;
 	background-color: #000: 
+}
+#numberOfNodes{
+	width: 15%;
+}
+.horizontal-buttons{
+	display: flex;
+	margin: 15% auto;
+}
+.horizontal-buttons button{
+	margin: 0 auto;
+}
+#loadFileContainer{
+	padding: 10% 0;
+	margin: 0 auto;
 }

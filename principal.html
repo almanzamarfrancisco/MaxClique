@@ -7,45 +7,61 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-	<!-- <header>
+	<header>
 		<div id="Inner">
-			<h1>Lorem Ipsum</h1>
-			<h4>"Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."</h4>
-			<h5>"There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain..."</h5>
+			<h1>Maximal Cliques Reporting</h1>
+			<h1>ESCOM - IPN</h1>
+			<h2>Algorithms Analysis | Teacher Miriam Pescador Rojas</h2>
+			<h4>
+				Students: <br>
+				<ul>
+					<li>Jorge Luis Casas Ramírez - copa_cr@hotmail.com</li>
+					<li>Almanza Martínez Francisco Alejandro - almanza.marfrancisco@gmail.com</li>
+				</ul>
+			</h4>
+			<h5>Proyect - Group: 3CM1</h5>
 			<hr>
 			<div id="Content">
 				<div class="boxed">
 					<div id="lipsum">
 						<p>
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dapibus efficitur maximus. Integer ut nisl placerat, tincidunt magna vitae, finibus ex. Aliquam ut ornare purus. Suspendisse rhoncus malesuada ex, vitae rhoncus augue sollicitudin tincidunt. Ut vehicula cursus tristique. Morbi maximus fermentum odio, at euismod diam ultrices congue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Phasellus orci neque, lacinia et sapien nec, tempus fringilla diam. Cras sit amet ullamcorper est. Pellentesque laoreet dui non urna commodo aliquet eu non mi. Donec molestie quam quis massa vestibulum fringilla. Nunc eget ligula lacus.
+							The term "clique" comes from the English word clique, which defines a group of people who share common interests. This problem considers as an analogy that people would be the vertices and the common interests, the edges. When they all share the same interest, they form a complete graph, that is, they form a clique.
 						</p>
 						<p>
-							Aliquam imperdiet porta mauris. Suspendisse nec ultrices est. Proin ornare, ex vel consectetur dignissim, urna nulla condimentum nunc, ac dictum libero elit vel nulla. Curabitur dui nibh, elementum in venenatis convallis, suscipit non eros. Donec nec est in augue posuere vehicula laoreet sed leo. Fusce id venenatis risus, at euismod ipsum. Phasellus elementum scelerisque laoreet.
+							A clique on an undirected graph G is a set of vertices V, such that, for every pair of vertices of V, there is an edge that connects them, where the size of a clique is the number of vertices it contains.
 						</p>
 						<p>
-							Nam suscipit accumsan magna a commodo. Mauris vitae lectus vulputate, pellentesque erat eleifend, consectetur est. Vestibulum lectus lectus, tincidunt vitae euismod vitae, lobortis quis enim. Nunc venenatis ante id vehicula imperdiet. Sed a magna enim. Etiam viverra nibh metus. Mauris bibendum malesuada malesuada. Quisque porta ac magna a hendrerit. Pellentesque consequat elit eu sem eleifend, eu fringilla ipsum efficitur. Praesent at lobortis purus. Pellentesque ultricies maximus enim at accumsan. Aenean at lacus viverra, faucibus magna commodo, viverra lorem.
+							Given an undirected graph G = (V, E), in which V = {1,2, ..., n} is the set of the vertices of the graph and E is the set of edges. A clique is a set C of vertices where every pair of vertices of C is connected with an edge in G, that is to say C is a complete subgraph.
 						</p>
 						<p>
-							Donec consectetur lectus augue, nec feugiat justo ullamcorper ac. Phasellus sed consequat turpis. Curabitur ante velit, hendrerit quis ipsum id, volutpat lobortis risus. Fusce et mauris euismod, aliquam ex in, ornare nibh. Quisque nec tortor id enim dictum tempus ut a tortor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Ut tristique turpis enim, et tempor tellus pretium vitae. Nunc placerat lectus in lorem cursus ultricies. Maecenas neque eros, finibus eu convallis a, bibendum sed eros. Donec efficitur vehicula nisl ut euismod. Sed vulputate, dolor ultricies rutrum eleifend, orci nibh pulvinar ligula, in mollis ex est non ipsum. Maecenas dapibus maximus hendrerit. Sed congue dui sit amet augue facilisis porttitor. Donec in sem sapien.
-						</p>
-						<p>
-							Etiam laoreet dolor ante, sed molestie lorem egestas vel. Morbi finibus justo enim, malesuada varius nunc aliquam convallis. Nulla luctus sollicitudin ipsum, vehicula cursus purus aliquet ut. Quisque lacus tortor, fermentum id accumsan in, mattis porta ex. Ut rutrum lorem eros, quis gravida sem tincidunt a. Ut finibus cursus maximus. Quisque molestie ornare turpis quis rutrum.
+							This problem can be stated as a decision problem if the question asked is whether there is a clique of size k in the graph. The corresponding optimization problem is to find a clique of maximum size in a graph.
 						</p>
 					</div>
 				</div>
 			</div>
 		</div>
-	</header> -->
+	</header>
 	<div id="mainPanel">
 		<div id="controls">
-			Input:
-			<form>
-				<label>Number of nodes</label><br><br>
-				<label>Nodes description</label><br><br>
-				<label>Get from file</label><br><br>
-				<button>Random generation</button><br><br>
-				<button>Generate graph</button><br><br>
-			</form>
+			<div id="inputContent">
+				Input:
+				<label for="numberOfNodes">Number of nodes</label>
+				<input type="number" id="numberOfNodes" name="numberOfNodes" max="30" min="3">
+			</div>
+			<br>
+			<div class="horizontal-buttons">
+				<button id="generate" onclick="setProperties()" type="button">RandomGeration</button>
+				<button id="setDefaults" onclick="setDefault()" type="button">Set defaults</button>
+				<br>
+			</div>
+			<div id="donwloadFileContainer" class="horizontal-buttons">
+				<button id="dowloadActualGraphButton">Dowload actual graph</button>
+			</div>
+			<div id="loadFileContainer">
+				<label for="loadFile">Cargar archivo: </label>
+				<input type="file" id="loadFile" name="loadFile">
+				<small style="font-weight: bold;">Los archivos permitidos json y csv</small>
+			</div>
 		</div>
 		<div id="graph"></div>    
 	</div>
