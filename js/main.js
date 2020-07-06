@@ -32,7 +32,7 @@
 					node.r = nodeRadius
 			})
 			range = globalData.nodes.length
-			console.log(range)
+			console.log("Number of nodes: " + range)
 			globalData.links = globalData.links.filter(function(link){
 				return link.source < range && link.target < range
 			})
@@ -62,7 +62,8 @@
 		getAllNodesNeighborhood() // Fill neighborhood
 		let R = [] // Response
 		let X = [] // Auxiliar
-		BronKerbosh(R, [...globalData.nodes], X)
+		// BronKerbosh(R, [...globalData.nodes], X)
+		IK_(R, [...globalData.nodes], X)
 		console.log(foundCliques)
 		fillMaximalClique()
 		document.querySelector("#dowloadActualGraphButton").// Dowload button
@@ -310,8 +311,34 @@
 			}
 	}
 	function IK_(R, P, X){
+		call++
 		if(P.length === 0 && X.length === 0){
-			;
+			if(R.length > 2){
+				// console.log("As the maximal clique: ", R)
+				fillNodes(R)
+				foundCliques.push(R)
+			}	
+		}
+		else{
+			if(!P.length)
+				return	
+			let pivot = P[0]// Choose pivot
+			let pivotNeighborhood = getNeighbors(pivot.index)
+			let pivotNeighborhoodIndexes = pivotNeighborhood.map(function(node){
+				return node.index
+			})
+			for(let n of P){
+				if(!pivotNeighborhoodIndexes.includes(n.index)){
+					P = dropElement(P, n)
+					let r = [...R, n]
+					let neighbors = getNeighbors(n.index)
+					let p = intersection([...P], neighbors)
+					let x = intersection([...X], neighbors)
+					IK_(r, p, x)
+					X = [...X, n]
+				}
+			}
+
 		}
 	}
 	function fillMaximalClique(){
