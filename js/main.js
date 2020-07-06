@@ -12,7 +12,7 @@
 	var globalData;
 	var call = 0 //Calling counter
 	var foundCliques = []
-	var range = 4
+	var range = 5
 	const maxAllowedSize = 5 * 1024 * 1024;
 	var loadedGraphFound = false 
 	var nodeRadius = screen.width*0.01
@@ -69,8 +69,8 @@
 			addEventListener('click', function(){dowloadJSONData(globalData, "actualGraph.json")}, false)
 		document.querySelector("#loadFile").// Dowload button
 			addEventListener('change', function(){ getFileContent() }, false)
-		let t = arrayRange(100, 200,1)
-		console.log(t.map(value => {return { "index": value, "label": "node" + value }}))
+		// let t = arrayRange(200, 500,1)
+		// console.log(t.map(value => {return { "index": value, "label": "node" + value }}))
 	}
 
 	function verifyAllNodesAreConnected(range){
@@ -321,7 +321,7 @@
 				maximalClique = clique
 		})
 		fillNodes(maximalClique, '#08e5fdb5')
-		console.log(maximalClique)
+		console.log("maximal clique", maximalClique)
 	}
 	function dowloadJSONData(data, fileName){
 		var a = document.createElement("a")
