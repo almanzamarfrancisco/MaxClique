@@ -13,50 +13,68 @@
 	var call = 0 //Calling counter
 	var foundCliques = []
 	var range = 4
+	const maxAllowedSize = 5 * 1024 * 1024;
+	var loadedGraphFound = false 
+	const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
 	main()
 
 	function main() {
 		let localStorageRange = localStorage.getItem('range')
 		range =  localStorageRange || range
-		document.querySelector("#numberOfNodes").value = range
-		globalData = {// Place random set
-			nodes: d3.range(0, range).map(function(index){// Place nodes
-				return {
-					index: index,
-					label: "node" + index,
-							r:screen.width*0.025//~~d3.randomUniform(8, 28)()// Circles radio 
-						}
-					}),
-			links: d3.range(0, range).map(function() {// Place random link
-				return {
-							source:~~d3.randomUniform(range)(), // Random links assignments
-							target:~~d3.randomUniform(range)() // Random links assignments
-						}
-					})
+		var loadedGraph = localStorage.getItem('loadedGraph')
+		if(loadedGraph){
+			console.log('Graph found')
+			loadedGraphFound = true
+			globalData = JSON.parse(loadedGraph)
+			globalData.nodes.map(function(node){
+				if(!node.r)
+					node.r = screen.width*0.025
+			})
+			// console.log(globalData)
+			range = globalData.nodes.length
 		}
-		verifyAllNodesAreConnected(range)
+		else
+			globalData = {// Place random set
+				nodes: d3.range(0, range).map(function(index){// Place nodes
+					return {
+						index: index,
+						label: "node" + index,
+								r:screen.width*0.025//~~d3.randomUniform(8, 28)()// Circles radio 
+							}
+						}),
+				links: d3.range(0, range).map(function() {// Place random link
+					return {
+								source:~~d3.randomUniform(range)(), // Random links assignments
+								target:~~d3.randomUniform(range)() // Random links assignments
+							}
+						})
+			}
+		document.querySelector("#numberOfNodes").value = range
+		if(!loadedGraphFound)
+			verifyAllNodesAreConnected(range)
 		setSize()
-		drawChart(globalData)
+		drawChart()
 		getAllNodesNeighborhood() // Fill neighborhood
 		let R = [] // Response
 		let X = [] // Auxiliar
 		BronKerbosh(R, [...globalData.nodes], X)
 		console.log(foundCliques)
 		fillMaximalClique()
-		document.querySelector("#dowloadActualGraphButton").
+		document.querySelector("#dowloadActualGraphButton").// Dowload button
 			addEventListener('click', function(){dowloadJSONData(globalData, "actualGraph.json")}, false)
+		document.querySelector("#loadFile").// Dowload button
+			addEventListener('change', function(){ getFileContent() }, false)
 	}
 
 	function verifyAllNodesAreConnected(range){
 		globalData.links = globalData.links.filter((link) => { // For delete links which are from a node to the same
 			return link.source !== link.target
 		})
-		globalData.links = [...new Set(globalData.links.flat(1))] // For getting uniques arrays
 		let  complement = { // unadded items  complement used for verifying all nodes are connected
-			csources: [...Array(range).keys()],// A container of all available numbers
-			ctargets: [...Array(range).keys()],// A container of all available numbers
+			csources: arrayRange(0, range-1, 1),// A container of all available numbers
+			ctargets: arrayRange(0, range-1, 1),// A container of all available numbers
 		}
-		let sources = globalData.links.map((link) => {
+		let sources = globalData.links.map(function(link){
 			return link.source
 		})
 		let targets = globalData.links.map(function(link){
@@ -64,6 +82,8 @@
 		})
 		sources.map(function(index){complement.csources.splice(index, 1)})
 		targets.map(function(index){complement.ctargets.splice(index, 1)})
+		console.log(complement.csources)
+		console.log(complement.ctargets)
 		complement.csources.map(function(source){
 			globalData.links.push({
 				source: source,
@@ -97,7 +117,7 @@
 		.attr("height", chartHeight)
 		.attr("transform", "translate("+[margin.left, margin.top]+")")
 	}
-	function drawChart(data) {
+	function drawChart() {
 		var simulation = d3.forceSimulation()
 			.force("link", d3.forceLink().id(function(d) { return d.index }))
 			.force("collide",d3.forceCollide( function(d){return d.r + 8 }).iterations(16) )
@@ -108,7 +128,7 @@
 		var link = svg.append("g")
 			.attr("class", "link")
 			.selectAll("line")
-			.data(data.links)
+			.data(globalData.links)
 			.enter()
 			.append("line")
 			.attr("class", "link")
@@ -116,7 +136,7 @@
 		var node = svg.append("g")
 			.attr("class", "node")
 			.selectAll("circle")
-			.data(data.nodes)
+			.data(globalData.nodes)
 			.enter().append("circle")
 			.attr("r", function(d){  return d.r })
 			.attr("label", function(d){  return d.label })
@@ -140,11 +160,17 @@
 				.attr("cx", function(d) { return d.x })
 				.attr("cy", function(d) { return d.y })
 		}  
-		simulation
-			.nodes(data.nodes)
-			.on("tick", ticked)
-		simulation.force("link")
-			.links(data.links)  
+		try {
+			simulation
+				.nodes(globalData.nodes)
+				.on("tick", ticked)
+			console.log(globalData.links) 
+			simulation
+				.force("link")
+				.links(globalData.links)
+		} catch(e) {
+			console.log(e);
+		}
 
 		function dragstarted(d) {
 			if (!d3.event.active) simulation.alphaTarget(0.3).restart()
@@ -303,8 +329,34 @@
 			a.click()
 			window.URL.revokeObjectURL(url)
 	}
+	function getFileContent(){
+		var file = document.getElementById('loadFile').files[0];
+		if (file) {
+			// console.log(file)
+			if(file.type !== "application/json" && file.type !== "text/csv")
+				alert("Only json and csv files are accepted")
+			if(file.size > maxAllowedSize)
+				alert("File is too big for processing")
+			let reader = new FileReader();
+			reader.readAsText(file, "UTF-8");
+			reader.onload = function (event) {
+				// document.getElementById("fileContents").innerHTML = event.target.result;
+				console.log(JSON.parse(event.target.result))
+				document.getElementById('drawLoadedGraph').style.display = 'block'
+				localStorage.setItem('loadedGraph', event.target.result)
+			}
+			reader.onerror = function (event) {
+				// document.getElementById("fileContents").innerHTML = "error reading file";
+				console.info("error reading to load file")
+				alert("There was an error to load file")
+			}
+		}
+		else
+			alert("There was an error on the file")
+	}
 }());
 function setProperties(){
+	localStorage.clear()
 	localStorage.setItem('range', document.querySelector("#numberOfNodes").value)
 	location.reload()
 }

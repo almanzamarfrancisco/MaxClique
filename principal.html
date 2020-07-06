@@ -58,9 +58,11 @@
 				<button id="dowloadActualGraphButton">Dowload actual graph</button>
 			</div>
 			<div id="loadFileContainer">
-				<label for="loadFile">Cargar archivo: </label>
-				<input type="file" id="loadFile" name="loadFile">
-				<small style="font-weight: bold;">Los archivos permitidos json y csv</small>
+				<label for="loadFile">Load graph from file: </label>
+				<input type="file" id="loadFile" name="loadFile" accept=".json, .csv">
+				<br>
+				<small style="font-weight: bold;">Permited formats are json and csv</small>
+				<button id="drawLoadedGraph" onclick="location.reload()">Draw Loaded Graph</button>
 			</div>
 		</div>
 		<div id="graph"></div>    
