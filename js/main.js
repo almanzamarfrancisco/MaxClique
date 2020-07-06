@@ -15,6 +15,7 @@
 	var range = 4
 	const maxAllowedSize = 5 * 1024 * 1024;
 	var loadedGraphFound = false 
+	var nodeRadius = screen.width*0.01
 	const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
 	main()
 
@@ -28,10 +29,14 @@
 			globalData = JSON.parse(loadedGraph)
 			globalData.nodes.map(function(node){
 				if(!node.r)
-					node.r = screen.width*0.025
+					node.r = nodeRadius
+			})
+			range = globalData.nodes.length
+			console.log(range)
+			globalData.links = globalData.links.filter(function(link){
+				return link.source < range && link.target < range
 			})
 			// console.log(globalData)
-			range = globalData.nodes.length
 		}
 		else
 			globalData = {// Place random set
@@ -39,7 +44,7 @@
 					return {
 						index: index,
 						label: "node" + index,
-								r:screen.width*0.025//~~d3.randomUniform(8, 28)()// Circles radio 
+								r: nodeRadius//~~d3.randomUniform(8, 28)()// Circles radio 
 							}
 						}),
 				links: d3.range(0, range).map(function() {// Place random link
@@ -64,6 +69,8 @@
 			addEventListener('click', function(){dowloadJSONData(globalData, "actualGraph.json")}, false)
 		document.querySelector("#loadFile").// Dowload button
 			addEventListener('change', function(){ getFileContent() }, false)
+		let t = arrayRange(100, 200,1)
+		console.log(t.map(value => {return { "index": value, "label": "node" + value }}))
 	}
 
 	function verifyAllNodesAreConnected(range){
@@ -82,8 +89,6 @@
 		})
 		sources.map(function(index){complement.csources.splice(index, 1)})
 		targets.map(function(index){complement.ctargets.splice(index, 1)})
-		console.log(complement.csources)
-		console.log(complement.ctargets)
 		complement.csources.map(function(source){
 			globalData.links.push({
 				source: source,
@@ -164,7 +169,6 @@
 			simulation
 				.nodes(globalData.nodes)
 				.on("tick", ticked)
-			console.log(globalData.links) 
 			simulation
 				.force("link")
 				.links(globalData.links)
@@ -241,6 +245,7 @@
 		.attr('class', 'textNode')
 		.attr('x', function() { return n.attr('cx') - 15 })
 		.attr('y', function() { return n.attr('cy') })
+		.style('font-size', nodeRadius*0.5)
 		.text(function() {
 			return n.attr('label').charAt(0).toUpperCase() + n.attr('label').slice(1)
 		})
@@ -316,6 +321,7 @@
 				maximalClique = clique
 		})
 		fillNodes(maximalClique, '#08e5fdb5')
+		console.log(maximalClique)
 	}
 	function dowloadJSONData(data, fileName){
 		var a = document.createElement("a")
