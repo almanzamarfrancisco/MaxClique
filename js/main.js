@@ -16,6 +16,7 @@
 	const maxAllowedSize = 5 * 1024 * 1024;
 	var loadedGraphFound = false 
 	var nodeRadius = screen.width*0.01
+	var neighborhoodLengths = []
 	const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
 	main()
 
@@ -213,6 +214,7 @@
 	function getAllNodesNeighborhood(){
 		globalData.nodes.map(function(node){
 			node.neighbors = getNeighborhoodLabels(node.index)
+			neighborhoodLengths.push(node.neighbors.length)
 			d3.select('#' + node.label)
 				.attr('neighborhood', node.neighbors.toString())
 		})
@@ -322,7 +324,13 @@
 		else{
 			if(!P.length)
 				return	
-			let pivot = P[0]// Choose pivot
+			let pivot
+			if(call === 1)
+				pivot = P[neighborhoodLengths.indexOf(Math.max(...neighborhoodLengths))]
+			let choosepivotArray = P.map(function(node){
+				return node.neighbors.length
+			})
+			pivot = P[choosepivotArray.indexOf(Math.max(...choosepivotArray))]// Choose pivot
 			let pivotNeighborhood = getNeighbors(pivot.index)
 			let pivotNeighborhoodIndexes = pivotNeighborhood.map(function(node){
 				return node.index
