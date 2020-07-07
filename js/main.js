@@ -383,7 +383,8 @@
 			reader.onload = function (event) {
 				// document.getElementById("fileContents").innerHTML = event.target.result;
 				console.log(JSON.parse(event.target.result))
-				document.getElementById('drawLoadedGraph').style.display = 'block'
+				document.getElementById('drawLoadedGraph').classList.remove('hidden')
+				document.getElementById('successAlert').classList.remove('hidden')
 				localStorage.setItem('loadedGraph', event.target.result)
 			}
 			reader.onerror = function (event) {

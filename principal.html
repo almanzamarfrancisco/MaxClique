@@ -41,28 +41,27 @@
 			</div>
 		</div>
 	</header>
-	<div id="mainPanel">
+	<div id="mainPanel" class="d-flex">
 		<div id="controls">
 			<div id="inputContent">
-				Input:
-				<label for="numberOfNodes">Number of nodes</label>
-				<input type="number" id="numberOfNodes" name="numberOfNodes" max="30" min="3">
+				<h3>Input:</h3><hr>
+				<label for="numberOfNodes">Number of nodes: </label>
+				<div class="flex" style="text-align: center;">
+					<input  class="block-center" type="number" id="numberOfNodes" name="numberOfNodes" max="30" min="3">
+					<button class="block-center"  id="generate" onclick="setProperties()" type="button">RandomGeration</button>
+				</div>
 			</div>
-			<br>
 			<div class="horizontal-buttons">
-				<button id="generate" onclick="setProperties()" type="button">RandomGeration</button>
 				<button id="setDefaults" onclick="setDefault()" type="button">Set defaults</button>
-				<br>
-			</div>
-			<div id="donwloadFileContainer" class="horizontal-buttons">
 				<button id="dowloadActualGraphButton">Dowload actual graph</button>
 			</div>
 			<div id="loadFileContainer">
-				<label for="loadFile">Load graph from file: </label>
+				<h3>Load graph from file:</h3>
 				<input type="file" id="loadFile" name="loadFile" accept=".json, .csv">
 				<br>
 				<small style="font-weight: bold;">Permited formats are json and csv</small>
-				<button id="drawLoadedGraph" onclick="location.reload()">Draw Loaded Graph</button>
+				<p class="alert hidden" id="successAlert">File loaded succesfully, now click on next button for visualice</p>
+				<button id="drawLoadedGraph" class="hidden" onclick="location.reload()">Draw Loaded Graph</button>
 			</div>
 		</div>
 		<div id="graph"></div>    

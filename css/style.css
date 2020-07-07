@@ -6,6 +6,7 @@ html, body{
 	width: 98vw;
 	height: 98vh;
 	font-family: 'SairaCondensed', Arial, sans-serif;
+	font-size: 1em;
 }
 #graph{
 	background-color: #ccc;
@@ -25,7 +26,6 @@ html, body{
 	stroke-width: 3px;
 }
 #mainPanel{
-	display: flex;
 	padding: 2% 10%;
 }
 #controls{
@@ -50,9 +50,20 @@ header{
 	margin: 0 auto;
 }
 #loadFileContainer{
-	padding: 10% 0;
+	padding: 0 0;
 	margin: 0 auto;
 }
-#drawLoadedGraph{
-	display: none;
+.d-flex{
+	display: flex;
+}
+.block-center{
+	margin: 0 auto;
+}
+.alert{
+	background-color: #62ff0038;
+	border-radius: 8px;
+	border: 2px #62ff00 solid;background-color: #62ff0038; 
+}
+.hidden{
+	display: none
 }
