@@ -25,6 +25,7 @@
 		let localStorageRange = localStorage.getItem('range')
 		range =  localStorageRange || range
 		var loadedGraph = localStorage.getItem('loadedGraph')
+		var actualTab = localStorage.getItem('actualTab') || 0
 		if(loadedGraph){
 			console.log('Graph found')
 			loadedGraphFound = true
@@ -34,7 +35,7 @@
 					node.r = nodeRadius
 			})
 			range = globalData.nodes.length
-			console.log("Number of nodes: " + range)
+			// console.log("Number of nodes: " + range)
 			globalData.links = globalData.links.filter(function(link){
 				return link.source < range && link.target < range
 			})
@@ -72,6 +73,17 @@
 			addEventListener('click', function(){dowloadJSONData(globalData, "actualGraph.json")}, false)
 		document.querySelector("#loadFile").// Load file button
 			addEventListener('change', function(){ getFileContent() }, false)
+			// For tabs behavior
+		if(actualTab !== undefined){
+			let tabLabels = document.getElementsByClassName('tabLabel')
+			for(let i=0;i<tabLabels.length;i++){
+				tabLabels[i].removeAttribute('checked')
+				tabLabels[i].addEventListener('click', function(){ tabClick(tabLabels[i].getAttribute('index')) }, false)
+				if(i == actualTab)
+					document.getElementById('tab_' + i)
+						.setAttribute('checked', 'checked')
+			}
+		}
 		// let t = arrayRange(200, 500,1)
 		// console.log(t.map(value => {return { "index": value, "label": "node" + value }}))
 	}
@@ -422,6 +434,10 @@
 		}
 		else
 			alert("There was an error on the file")
+	}
+
+	function tabClick(index){
+		localStorage.setItem('actualTab', index)
 	}
 }());
 function setProperties(){
