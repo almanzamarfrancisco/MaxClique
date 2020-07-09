@@ -349,6 +349,56 @@
 
 		}
 	}
+
+	//funcion de simulacion de templado
+	function SimulatedAnnealing(){
+		//establecer temperaturas y constante de enfriamiento, es como las condiciones de un for
+		//temperatura_ini, temperatura_fin, n, c son variables de entrada, podriamos definirlas en funcion del tamaño
+		//del grafo
+		let temperatura_ini=50
+		let temperatura_fin=10
+		//constante de enfriamiento
+		//entre mas chico menos iteraciones, menos preciso
+		//entre mas grande mas itereaciones, mas preciso pero tambien mas tardado
+		let c=.5
+		//numero de movimientos
+		let n=500
+		let t_sistema=temperatura_ini
+		//=========================el muestreo es lo que no me sale================================
+		let x =muestreo()
+		//energia= al numero de vertices interconectados ie, numero de elementos del clique encontrado
+		let e//encontrar clique y contar nodos de x
+		while (t_sistema>temperatura_fin) {
+			for (let i = 1; i < n; i++) {
+				//x_prima es el vecindario de un nodo de la vecindad del nodo de muestreo
+				//x_prima tambien es una solucion porque en todo subgrafo hay al menos un clique de 2 pero 
+				//esa evaluacion se toma mas adelante
+				//aqui necesitamos una funcion que obtenga ese vecindario 
+				let x_prima
+				//e_prima es el conteo de nodos que el clique maximo de x prima tiene
+				let e_prima 
+				if (e_prima>e) {
+					x=x_prima
+					e=e_prima
+				} else {
+					//distribucion uniforme entre 0 y 1
+					let r=Math.random()
+					//constante para definir la aleatoriedad y el avance hacia el maximo global
+					let exp=Math.exp(-(e-e_prima))
+					if (r<exp) {
+						x=x_prima
+						e=e_prima
+					}
+				}
+				//enfriamiento del sistema para finalizar el ciclo while en algun punto
+				t=c*t	
+			}
+		}
+		//regresa la solucion encontrada al final del enfriamiento del sistema
+		return x
+	}
+
+
 	function fillMaximalClique(){
 		let maximalClique = []
 		foundCliques.map(function(clique){
