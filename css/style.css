@@ -2,18 +2,244 @@
 	font-family: "SairaCondensed";
 	src: url("../fonts/SairaCondensed-Light.ttf");
 }
-html, body{
-	width: 98vw;
-	height: 98vh;
+/*For slide tabs*/
+body {
+	color: #f5f5f5;
 	font-family: 'SairaCondensed', Arial, sans-serif;
-	font-size: 1em;
+	font-size: 1.1em;
+	overflow: hidden;
+	background: #000;
+}
+body .container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 1500px;
+	height: 1000px;
+	margin: -500px -750px;
+	counter-reset: tab-counter 4;
+}
+body .container input[type=radio] {
+	display: none;
+}
+body .container input[type=radio]:checked + label ~ label:nth-child(2) {
+	width: 54px;
+}
+body .container input[type=radio]:checked + label ~ label:nth-child(2) .content {
+	-webit-transition: opacity 0.4s cubic-bezier(0.11, 0.65, 0.04, 1);
+	transition: opacity 0.4s cubic-bezier(0.11, 0.65, 0.04, 1);
+	opacity: 0;
+	pointer-events: none;
+}
+body .container input[type=radio] + label {
+	position: absolute;
+	height: 100%;
+	box-shadow: 2px 0px 4px -2px #000;
+	/*cursor: pointer;*/
+	-webit-transition: width 1.2s cubic-bezier(0.11, 0.65, 0.04, 1);
+	transition: width 1.2s cubic-bezier(0.11, 0.65, 0.04, 1);
+}
+body .container input[type=radio] + label:nth-child(2) {
+	box-shadow: none;
+}
+body .container input[type=radio] + label:nth-child(2) {
+	width: 1500px;
+	background: #52a5bd;
+}
+body .container input[type=radio] + label .content {
+	position: absolute;
+	left: 35%;
+	top: 5%;
+	width: 1200px;
+	margin-left: -375px;
+	counter-increment: tab-counter -1;
+	text-align: center;
+}
+body .container input[type=radio] + label .content:after {
+	content: counter(tab-counter);
+}
+body .container input[type=radio]:checked + label ~ label:nth-child(4) {
+	width: 30px;
+}
+body .container input[type=radio]:checked + label ~ label:nth-child(4) .content {
+	-webit-transition: opacity 0.4s cubic-bezier(0.11, 0.65, 0.04, 1);
+	transition: opacity 0.4s cubic-bezier(0.11, 0.65, 0.04, 1);
+	opacity: 0;
+	pointer-events: none;
+}
+body .container input[type=radio] + label {
+	position: absolute;
+	height: 100%;
+	box-shadow: 2px 0px 4px -2px #000;
+	/*cursor: pointer;*/
+	-webit-transition: width 1.2s cubic-bezier(0.11, 0.65, 0.04, 1);
+	transition: width 1.2s cubic-bezier(0.11, 0.65, 0.04, 1);
+}
+body .container input[type=radio] + label:nth-child(2) {
+	box-shadow: none;
+}
+body .container input[type=radio] + label:nth-child(4) {
+	width: 1476px;
+	background: #21798c;
+}
+body .container input[type=radio] + label:nth-child(4):after {
+	position: absolute;
+	content: "";
+	top: 33.3333333333%;
+	left: 100%;
+	width: 18px;
+	height: 333.3333333333px;
+	border-radius: 0 33.3333333333px 33.3333333333px 0;
+	background: #21798c;
+	box-shadow: 3px 0px 6px -3px #000;
+}
+body .container input[type=radio] + label .content {
+	position: absolute;
+	left: 35%;
+	top: 5%;
+	width: 1200px;
+	margin-left: -375px;
+	counter-increment: tab-counter -1;
+	text-align: center;
+}
+body .container input[type=radio] + label .content:after {
+	content: counter(tab-counter);
+}
+body .container input[type=radio]:checked + label ~ label:nth-child(6) {
+	width: 6px;
+}
+body .container input[type=radio]:checked + label ~ label:nth-child(6) .content {
+	-webit-transition: opacity 0.4s cubic-bezier(0.11, 0.65, 0.04, 1);
+	transition: opacity 0.4s cubic-bezier(0.11, 0.65, 0.04, 1);
+	opacity: 0;
+	pointer-events: none;
+}
+body .container input[type=radio] + label {
+	position: absolute;
+	height: 100%;
+	box-shadow: 2px 0px 4px -2px #000;
+	/*cursor: pointer;*/
+	-webit-transition: width 1.2s cubic-bezier(0.11, 0.65, 0.04, 1);
+	transition: width 1.2s cubic-bezier(0.11, 0.65, 0.04, 1);
+}
+body .container input[type=radio] + label:nth-child(2) {
+	box-shadow: none;
+}
+body .container input[type=radio] + label:nth-child(6) {
+	width: 1452px;
+	background: #104c5a;
+}
+body .container input[type=radio] + label:nth-child(6):after {
+	position: absolute;
+	content: "";
+	top: 0%;
+	left: 100%;
+	width: 18px;
+	height: 333.3333333333px;
+	border-radius: 0 33.3333333333px 33.3333333333px 0;
+	background: #104c5a;
+	box-shadow: 3px 0px 6px -3px #000;
+}
+body .container input[type=radio] + label .content {
+	position: absolute;
+	left: 35%;
+	top: 5%;
+	width: 1200px;
+	margin-left: -375px;
+	counter-increment: tab-counter -1;
+	text-align: center;
+}
+body .container input[type=radio] + label .content:after {
+	content: counter(tab-counter);
+}
+/*site layout*/
+#escom-logo{
+	width: 180px;
+	background: #fff;
+	border-radius: 43px;
+	left: 0;
+	position: absolute;
+}
+#ipn-logo{
+	width: 135px;
+	background: #fff;
+	border-radius: 43px;
+	right: 0;
+	position: absolute;
+}
+h1, h2, h3, h4{
+	margin: 0;
+}
+.btn {
+	cursor: pointer;
+	font-weight: 400;
+	line-height: 15px;
+	max-width: 160px;
+	border-radius: 10px;
+	text-decoration: none;
+	width: 100%;
+}
+.btn:hover {
+	text-decoration: none;
+	color: #730d0b;
+}
+/*btn_background*/
+.effect01 {
+	color: #FFF;
+	border: 4px solid #730d0b;
+	box-shadow:0px 0px 0px 1px #730d0b inset;
+	background-color: #730d0b;
+	overflow: hidden;
+	position: relative;
+	transition: all 0.3s ease-in-out;
+}
+.effect01:hover {
+	border: 4px solid #666;
+	background-color: #FFF;
+	box-shadow:0px 0px 0px 4px #EEE inset;
+}
+
+/*btn_text*/
+.effect01 span {
+	transition: all 0.2s ease-out;
+	z-index: 2;
+}
+.effect01:hover span{
+	letter-spacing: 0.13em;
+	color: #333;
+}
+
+/*highlight*/
+.effect01:after {
+	background: #FFF;
+	border: 0px solid #730d0b;
+	content: "";
+	height: 155px;
+	left: -75px;
+	opacity: .8;
+	position: absolute;
+	top: -50px;
+	-webkit-transform: rotate(35deg);
+	transform: rotate(35deg);
+	width: 50px;
+	transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);/*easeOutCirc*/
+	z-index: 1;
+}
+.effect01:hover:after {
+	background: #FFF;
+	border: 20px solid #730d0b;
+	opacity: 0;
+	left: 120%;
+	-webkit-transform: rotate(40deg);
+	transform: rotate(40deg);
 }
 #graph{
-	background-color: #ccc;
+	background-color: #fff0;
 	width: 100%;
+	min-width: 1200px;
 	height: 100%;
-	min-height: 500px;
-	flex: 80%;
+	min-height: 550px;
+	/*border: solid #000 0.1em;*/
 }
 .node{
 	fill: #8f1f96de;
@@ -24,40 +250,6 @@ html, body{
 	fill: #777;
 	stroke: #000;
 	stroke-width: 3px;
-}
-#mainPanel{
-	padding: 2% 10%;
-}
-#controls{
-	flex: 20%;
-}
-header{
-	padding: 0 10%;
-}
-.textNode{
-	color: #ccc;
-	font-size: 1.1em;
-	background-color: #000: 
-}
-#numberOfNodes{
-	width: 15%;
-}
-.horizontal-buttons{
-	display: flex;
-	margin: 15% auto;
-}
-.horizontal-buttons button{
-	margin: 0 auto;
-}
-#loadFileContainer{
-	padding: 0 0;
-	margin: 0 auto;
-}
-.d-flex{
-	display: flex;
-}
-.block-center{
-	margin: 0 auto;
 }
 .alert{
 	background-color: #62ff0038;

@@ -9,6 +9,7 @@
 	var nodesMouseOverFillColor = "#467fffc9";
 	var nodesMouseOverNeighborsFillColor = "#00afb7bf";
 	var cliqueColor = "#1dff02c7";
+	var maximalCliqueFoundIndex = 0
 	var globalData;
 	var call = 0 //Calling counter
 	var foundCliques = []
@@ -65,11 +66,11 @@
 		let X = [] // Auxiliar
 		// BronKerbosh(R, [...globalData.nodes], X)
 		IK_(R, [...globalData.nodes], X)
-		console.log(foundCliques)
+		// console.log(foundCliques)
 		fillMaximalClique()
 		document.querySelector("#dowloadActualGraphButton").// Dowload button
 			addEventListener('click', function(){dowloadJSONData(globalData, "actualGraph.json")}, false)
-		document.querySelector("#loadFile").// Dowload button
+		document.querySelector("#loadFile").// Load file button
 			addEventListener('change', function(){ getFileContent() }, false)
 		// let t = arrayRange(200, 500,1)
 		// console.log(t.map(value => {return { "index": value, "label": "node" + value }}))
@@ -287,6 +288,19 @@
 			.attr('clique-part',true)
 		})
 	}
+	function fillCliqueNodes(index, color = cliqueColor){
+		if(!foundCliques[index])
+			return
+		document.getElementById('selectedClique').innerHTML = 'Clique' + index
+		foundCliques.map(function(clique, index){
+			if( maximalCliqueFoundIndex === index){
+				console.log(maximalCliqueFoundIndex)
+				return
+			}
+			fillNodes(clique, cliqueColor)
+		})
+		fillNodes(foundCliques[index], '#ff0500c4')
+	}
 	function dropElement(G, n){
 		return G.filter(function(node){
 			return node.index !== n.index
@@ -351,13 +365,26 @@
 	}
 	function fillMaximalClique(){
 		let maximalClique = []
-		foundCliques.map(function(clique){
-			if(clique.length > maximalClique.length)
+		foundCliques.map(function(clique, index){
+			let button = document.createElement("button")
+			button.classList.add('btn', 'effect01')
+			button.setAttribute('index', index)
+			button.setAttribute('id', 'clique' + index)
+			let newContent = document.createTextNode("Clique " + index)
+			button.appendChild(newContent) //añade texto al div creado. 
+			document.getElementById('cliquesButtons').append(button)
+			if(clique.length > maximalClique.length){
 				maximalClique = clique
+				maximalCliqueFoundIndex = index
+			}
+			button.addEventListener('click', function(){ fillCliqueNodes(index) }, false)
 		})
 		fillNodes(maximalClique, '#08e5fdb5')
-		console.log("maximal clique", maximalClique)
+		document.getElementById('maximalCliqueIndex').innerHTML = 'Maximal clique index: ' + maximalCliqueFoundIndex
+		document.getElementById('cliquesFound').innerHTML += ' ' + foundCliques.length
+		// console.log("maximal clique", maximalClique)
 	}
+
 	function dowloadJSONData(data, fileName){
 		var a = document.createElement("a")
 		document.body.appendChild(a)

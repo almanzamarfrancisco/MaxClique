@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible"/>
+	<title>Report the maximum clique</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>  
+	<div class="container">
+		<input type="radio" name="tabs" id="tab_2"/>
+		<label for="tab_2">
+			<div class="content">Hello, I'm #</div>
+		</label>
+		<input type="radio" name="tabs" id="tab_1" checked/>
+		<label for="tab_1">
+			<div class="content">
+				<div>
+					<h1>Demo:</h1>
+					<hr>
+					<div style="display: flex;">
+						<div style="flex: 33%">
+							<label for="numberOfNodes">Number of nodes: </label>
+							<input  class="block-center" type="number" id="numberOfNodes" name="numberOfNodes" max="30" min="3">
+							<button class="btn effect01"  id="generate" onclick="setProperties()" type="button">Random Geration</button>
+						</div>
+						<button style="flex: 33%" id="setDefaults" class="btn effect01" onclick="setDefault()" type="button">Set defaults</button>
+						<button style="flex: 33%" id="dowloadActualGraphButton" class="btn effect01">Dowload actual graph</button>
+					</div>
+					<div id="loadFileContainer">
+						<h3>Load graph from file:</h3>
+						<input type="file" id="loadFile" name="loadFile" accept=".json, .csv">
+						<br>
+						<small style="font-weight: bold;">Permited formats are json and csv</small>
+						<p class="alert hidden" id="successAlert">File loaded succesfully, now click on next button for visualice</p>
+						<button id="drawLoadedGraph" class="hidden btn effect01" onclick="location.reload()" style="font-size: 1.1em">Draw Loaded Graph</button>
+					</div>
+					<h4 style="font-weight: bold;" id="cliquesFound">Cliques found:</h4>
+					<p id="maximalCliqueIndex" style="margin: 0"></p>
+					<div id="cliquesButtons" style="max-height: 60px; overflow-y: scroll;"></div>
+					<h1 id="selectedClique">&nbsp;</h1>
+				</div>
+				<div id="graph"></div>    
+			</div>
+		</label>
+		<input type="radio" name="tabs" id="tab_0"/>
+		<label for="tab_0">
+			<div class="content">
+				<h1>Maximal Cliques Reporting</h1>
+				<hr>
+				<h1>
+					<img src="img/escom-logo.png" alt="ESCOM logo" id="escom-logo">
+					<p style="display: inline-block;">ESCOM - IPN</p>
+					<img src="img/ipn-logo.png" alt="IPN logo" id="ipn-logo">
+				</h1>
+				<h2>Algorithms Analysis</h2>
+				<h2>Teacher Dr. Miriam Pescador Rojas</h2>
+				<h4 style="width: 50%;margin: 0 auto;">
+					Students: <br>
+					<ul>
+						<li>Jorge Luis Casas Ramírez - copa_cr@hotmail.com</li>
+						<li>Almanza Martínez Francisco Alejandro - almanza.marfrancisco@gmail.com</li>
+					</ul>
+				</h4>
+				<h5>Proyect - Group: 3CM1</h5>
+				<hr>
+				<div id="Content">
+					<div class="boxed">
+						<div id="lipsum">
+							<p>
+								The term "clique" comes from the English word clique, which defines a group of people who share common interests. This problem considers as an analogy that people would be the vertices and the common interests, the edges. When they all share the same interest, they form a complete graph, that is, they form a clique.
+							</p>
+							<p>
+								A clique on an undirected graph G is a set of vertices V, such that, for every pair of vertices of V, there is an edge that connects them, where the size of a clique is the number of vertices it contains.
+							</p>
+							<p>
+								Given an undirected graph G = (V, E), in which V = {1,2, ..., n} is the set of the vertices of the graph and E is the set of edges. A clique is a set C of vertices where every pair of vertices of C is connected with an edge in G, that is to say C is a complete subgraph.
+							</p>
+							<p>
+								This problem can be stated as a decision problem if the question asked is whether there is a clique of size k in the graph. The corresponding optimization problem is to find a clique of maximum size in a graph.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</label>
+	</div>
+</body>
+	<script src="js/d3v4.1.1.min.js"></script>    
+	<script src="js/main.js"></script>  
+</html>
