@@ -1,32 +1,37 @@
 !(function(){
 	"use strict"
-	var width, height
-	var chartWidth, chartHeight
-	var margin
-	var svg = d3.select("#graph").append("svg")
-	var chartLayer = svg.append("g").classed("chartLayer", true)
-	var nodesColor = "#8f1f96de";
-	var nodesMouseOverFillColor = "#467fffc9";
-	var nodesMouseOverNeighborsFillColor = "#00afb7bf";
-	var cliqueColor = "#1dff02c7";
+	// SVG canvas size
+		var width, height 
+		var chartWidth, chartHeight
+		var margin
+		var svg = d3.select("#graph").append("svg")
+		var chartLayer = svg.append("g").classed("chartLayer", true)
+	// Colors
+		var nodesColor = "#8f1f96de";
+		var nodesMouseOverFillColor = "#467fffc9";
+		var nodesMouseOverNeighborsFillColor = "#00afb7bf";
+		var cliqueColor = "#1dff02c7";
+
 	var maximalCliqueFoundIndex = 0
-	var globalData;
-	var call = 0 //Calling counter
-	var foundCliques = []
-	var range = 5
-	const maxAllowedSize = 5 * 1024 * 1024;
-	var loadedGraphFound = false 
-	var nodeRadius = screen.width*0.01
-	var neighborhoodLengths = []
+	var globalData; // Data json object
+	var loadedGraphFound = false // localstorage json object for a loaded file
+	var foundCliques = [] // Max cliques array
+	var neighborhoodLengths = [] // For neighborhood node lengths
+	// Makes an array of consecutive numbers on a range
 	const arrayRange = (start, stop, step) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
-	main()
+	const maxAllowedSize = 5 * 1024 * 1024 // Max allowed size of file
+	var nodeRadius = screen.width*0.01 //
+	var call = 0 // Calling counter
+	var range = 5 // Number of nodes
+
+	main() // main function execution
 
 	function main() {
-		let localStorageRange = localStorage.getItem('range')
+		let localStorageRange = localStorage.getItem('range') // For getting the input range number
 		range =  localStorageRange || range
 		var loadedGraph = localStorage.getItem('loadedGraph')
 		var actualTab = localStorage.getItem('actualTab') || 0
-		if(loadedGraph){
+		if(loadedGraph){ // For getting a json graph from a file
 			console.log('Graph found')
 			loadedGraphFound = true
 			globalData = JSON.parse(loadedGraph)
@@ -73,7 +78,7 @@
 			addEventListener('click', function(){dowloadJSONData(globalData, "actualGraph.json")}, false)
 		document.querySelector("#loadFile").// Load file button
 			addEventListener('change', function(){ getFileContent() }, false)
-			// For tabs behavior
+		// For tabs behavior
 		if(actualTab !== undefined){
 			let tabLabels = document.getElementsByClassName('tabLabel')
 			for(let i=0;i<tabLabels.length;i++){
@@ -87,7 +92,7 @@
 		// let t = arrayRange(200, 500,1)
 		// console.log(t.map(value => {return { "index": value, "label": "node" + value }}))
 	}
-
+	// For verifying all random generated nodes are connected
 	function verifyAllNodesAreConnected(range){
 		globalData.links = globalData.links.filter((link) => { // For delete links which are from a node to the same
 			return link.source !== link.target
@@ -121,6 +126,7 @@
 		})
 		globalData.links = [...new Set(globalData.links.flat(1))] // For getting uniques arrays 
 	}
+	// For setting size of the svg 
 	function setSize() {
 		width = document.querySelector("#graph").clientWidth
 		height = document.querySelector("#graph").clientHeight
@@ -133,10 +139,11 @@
 		svg.attr("width", width).attr("height", height)
 
 		chartLayer
-		.attr("width", chartWidth)
-		.attr("height", chartHeight)
-		.attr("transform", "translate("+[margin.left, margin.top]+")")
+			.attr("width", chartWidth)
+			.attr("height", chartHeight)
+			.attr("transform", "translate("+[margin.left, margin.top]+")")
 	}
+	// For drawing the chart
 	function drawChart() {
 		var simulation = d3.forceSimulation()
 			.force("link", d3.forceLink().id(function(d) { return d.index }))
@@ -223,7 +230,7 @@
 		fillNeighborhoodNodes(v.attr('index'), nodesColor) // second option
 		d3.selectAll('.textNode').remove()
 	}
-	//
+	// For getting Neighborhood of al nodes
 	function getAllNodesNeighborhood(){
 		globalData.nodes.map(function(node){
 			node.neighbors = getNeighborhoodLabels(node.index)
@@ -232,6 +239,7 @@
 				.attr('neighborhood', node.neighbors.toString())
 		})
 	}
+	// All nodes gas a Neighborhood
 	function getNeighborhoodLabels(nodeIndex){
 		let neighborsIndex = []
 		globalData.links.map(function(link){
@@ -242,6 +250,7 @@
 		})
 		return neighborsIndex.map(function(index){ return "node" + index} )
 	}
+	// For filling a neighborhood from a node
 	function fillNeighborhoodNodes(nodeIndex, color){// Fill neighborhood 
 		let v = d3.select('#node' + nodeIndex)
 		let neighborhood = v.attr('neighborhood').split(',')
@@ -253,24 +262,27 @@
 				showNodeLabelText(neighborLabel)
 			})
 	}
+	// For showing the node label
 	function showNodeLabelText(nodeLabel){
 		let n = d3.select('#' + nodeLabel)
 		svg.append("text") // Name label text
-		.attr('id', 'text' + n.attr('label'))
-		.attr('label', 'textNode' + n.attr('label'))
-		.attr('class', 'textNode')
-		.attr('x', function() { return n.attr('cx') - 15 })
-		.attr('y', function() { return n.attr('cy') })
-		.style('font-size', nodeRadius*0.5)
-		.text(function() {
-			return n.attr('label').charAt(0).toUpperCase() + n.attr('label').slice(1)
-		})
+			.attr('id', 'text' + n.attr('label'))
+			.attr('label', 'textNode' + n.attr('label'))
+			.attr('class', 'textNode')
+			.attr('x', function() { return n.attr('cx') - 15 })
+			.attr('y', function() { return n.attr('cy') })
+			.style('font-size', nodeRadius*0.5)
+			.text(function() {
+				return n.attr('label').charAt(0).toUpperCase() + n.attr('label').slice(1)
+			})
 	}
+	// For getting Neighbors
 	function getNeighbors(index){
 		return globalData.nodes[index].neighbors.map(function(nodeLabel){
 			return globalData.nodes[parseInt(nodeLabel.replace('node', ''))]
 		})
 	}
+	// For getting subsets intersection
 	function intersection(A, B){
 		if(!A || !B || !A.length || !B.length)
 			return []
@@ -290,6 +302,7 @@
 		// console.log(result)
 		return result
 	}
+	// For filling all nodes of a subset
 	function fillNodes(R, color = cliqueColor){
 		// console.log(R, color)
 		if(!R)
@@ -300,6 +313,7 @@
 			.attr('clique-part',true)
 		})
 	}
+	// For fill all nodes of all cliques found
 	function fillCliqueNodes(index, color = cliqueColor){
 		if(!foundCliques[index])
 			return
@@ -313,11 +327,13 @@
 		})
 		fillNodes(foundCliques[index], '#ff0500c4')
 	}
+	// For delete a node from a graph
 	function dropElement(G, n){
 		return G.filter(function(node){
 			return node.index !== n.index
 		})
 	}
+	// BronKerbosh algorithm
 	function BronKerbosh(R, P, X){
 		call++// calling counter
 		if(P.length === 0 && X.length === 0){
@@ -338,6 +354,7 @@
 				X = [...X, n]
 			}
 	}
+	// BronKerbosh algorithm with pivot
 	function IK_(R, P, X){
 		call++
 		if(P.length === 0 && X.length === 0){
@@ -375,6 +392,7 @@
 
 		}
 	}
+	// For getting and filling maximal clique
 	function fillMaximalClique(){
 		let maximalClique = []
 		foundCliques.map(function(clique, index){
@@ -396,7 +414,7 @@
 		document.getElementById('cliquesFound').innerHTML += ' ' + foundCliques.length
 		// console.log("maximal clique", maximalClique)
 	}
-
+	// For dowloading a json data file
 	function dowloadJSONData(data, fileName){
 		var a = document.createElement("a")
 		document.body.appendChild(a)
