@@ -11,6 +11,8 @@
 		var nodesMouseOverFillColor = "#467fffc9";
 		var nodesMouseOverNeighborsFillColor = "#00afb7bf";
 		var cliqueColor = "#1dff02c7";
+		var selectedCliqueColor = '#ff0500c4'
+		var maximalCliqueColor = '#08e5fdb5'
 
 	var maximalCliqueFoundIndex = 0
 	var globalData; // Data json object
@@ -319,13 +321,9 @@
 			return
 		document.getElementById('selectedClique').innerHTML = 'Clique' + index
 		foundCliques.map(function(clique, index){
-			if( maximalCliqueFoundIndex === index){
-				console.log(maximalCliqueFoundIndex)
-				return
-			}
 			fillNodes(clique, cliqueColor)
 		})
-		fillNodes(foundCliques[index], '#ff0500c4')
+		fillNodes(foundCliques[index], selectedCliqueColor)
 	}
 	// For delete a node from a graph
 	function dropElement(G, n){
@@ -409,7 +407,7 @@
 			}
 			button.addEventListener('click', function(){ fillCliqueNodes(index) }, false)
 		})
-		fillNodes(maximalClique, '#08e5fdb5')
+		fillNodes(maximalClique, maximalCliqueColor)
 		document.getElementById('maximalCliqueIndex').innerHTML = 'Maximal clique index: ' + maximalCliqueFoundIndex
 		document.getElementById('cliquesFound').innerHTML += ' ' + foundCliques.length
 		// console.log("maximal clique", maximalClique)
