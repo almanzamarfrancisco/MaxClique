@@ -17,30 +17,41 @@
 		<input type="radio" name="tabs" id="tab_1" />
 		<label for="tab_1" class="tabLabel" id="labelTab_1" index="1">
 			<div class="content">
-				<div>
-					<h1>Demo:</h1>
-					<hr>
-					<div style="display: flex;">
-						<div style="flex: 33%">
-							<label for="numberOfNodes">Number of nodes: </label>
-							<input  class="block-center" type="number" id="numberOfNodes" name="numberOfNodes" max="30" min="3">
-							<button class="btn effect01"  id="generate" onclick="setProperties()" type="button">Random Geration</button>
+				<h1>Demo:</h1>
+						<hr>
+				<div style="display: flex;">
+					<div style="flex: 20%;border-right: solid 1px;padding-right: 10%;">
+						<h3>Color descriptions</h3>
+						<div class="box box-show-color" style="background:#8f1f96de "></div>Simple node <br>
+						<div class="box box-show-color" style="background:#00afb7bf "></div>Simple nodes neighbor (when mouse over a node only) <br>
+						<div class="box box-show-color" style="background:#1dff02c7 "></div>Clique nodes <br>
+						<div class="box box-show-color" style="background: #08e5fdb5"></div>Maximal clique <br>
+						<div class="box box-show-color" style="background: #ff0500c4"></div>Selected clique <br>
+					</div>
+					<div style="flex: 80%">
+						
+						<div style="display: flex;">
+							<div style="flex: 33%">
+								<label for="numberOfNodes">Number of nodes: </label>
+								<input  class="block-center" type="number" id="numberOfNodes" name="numberOfNodes" max="30" min="3">
+								<button class="btn effect01"  id="generate" onclick="setProperties()" type="button">Random Geration</button>
+							</div>
+							<button style="flex: 33%" id="setDefaults" class="btn effect01" onclick="setDefault()" type="button">Set defaults</button>
+							<button style="flex: 33%" id="dowloadActualGraphButton" class="btn effect01">Dowload actual graph</button>
 						</div>
-						<button style="flex: 33%" id="setDefaults" class="btn effect01" onclick="setDefault()" type="button">Set defaults</button>
-						<button style="flex: 33%" id="dowloadActualGraphButton" class="btn effect01">Dowload actual graph</button>
+						<div id="loadFileContainer">
+							<h3>Load graph from file:</h3>
+							<input type="file" id="loadFile" name="loadFile" accept=".json, .txt">
+							<br>
+							<small style="font-weight: bold;">Permited formats are json and txt</small>
+							<p class="alert hidden" id="successAlert">File loaded succesfully, now click on next button for visualice</p>
+							<button id="drawLoadedGraph" class="hidden btn effect01" onclick="location.reload()" style="font-size: 1.1em">Draw Loaded Graph</button>
+						</div>
+						<h4 style="font-weight: bold;" id="cliquesFound">Cliques found:</h4>
+						<p id="maximalCliqueIndex" style="margin: 0"></p>
+						<div id="cliquesButtons" style="max-height: 60px; overflow-y: scroll;"></div>
+						<h1 id="selectedClique">&nbsp;</h1>
 					</div>
-					<div id="loadFileContainer">
-						<h3>Load graph from file:</h3>
-						<input type="file" id="loadFile" name="loadFile" accept=".json, .csv">
-						<br>
-						<small style="font-weight: bold;">Permited formats are json and csv</small>
-						<p class="alert hidden" id="successAlert">File loaded succesfully, now click on next button for visualice</p>
-						<button id="drawLoadedGraph" class="hidden btn effect01" onclick="location.reload()" style="font-size: 1.1em">Draw Loaded Graph</button>
-					</div>
-					<h4 style="font-weight: bold;" id="cliquesFound">Cliques found:</h4>
-					<p id="maximalCliqueIndex" style="margin: 0"></p>
-					<div id="cliquesButtons" style="max-height: 60px; overflow-y: scroll;"></div>
-					<h1 id="selectedClique">&nbsp;</h1>
 				</div>
 				<div id="graph"></div>    
 			</div>

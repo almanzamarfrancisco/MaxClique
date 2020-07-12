@@ -254,3 +254,6 @@ h1, h2, h3, h4{
 .hidden{
 	display: none
 }
+.box-show-color{
+	display: inline-block;width: 10px;height: 10px;margin: 0 10%;
+}
