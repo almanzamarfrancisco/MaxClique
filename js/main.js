@@ -37,15 +37,8 @@
 			console.log('Graph found')
 			loadedGraphFound = true
 			globalData = JSON.parse(loadedGraph)
-			globalData.nodes.map(function(node){
-				if(!node.r)
-					node.r = nodeRadius
-			})
 			range = globalData.nodes.length
 			// console.log("Number of nodes: " + range)
-			globalData.links = globalData.links.filter(function(link){
-				return link.source < range && link.target < range
-			})
 			// console.log(globalData)
 		}
 		else
@@ -428,19 +421,97 @@
 	function getFileContent(){
 		var file = document.getElementById('loadFile').files[0];
 		if (file) {
-			// console.log(file)
-			if(file.type !== "application/json" && file.type !== "text/csv")
-				alert("Only json and csv files are accepted")
-			if(file.size > maxAllowedSize)
+			// console.log(file.type)
+			if(file.type !== "application/json" && file.type !== "text/plain"){
+				alert("Only json and txt files are accepted")
+				return
+			}
+			if(file.size > maxAllowedSize){
 				alert("File is too big for processing")
+				return
+			}
 			let reader = new FileReader();
 			reader.readAsText(file, "UTF-8");
 			reader.onload = function (event) {
-				// document.getElementById("fileContents").innerHTML = event.target.result;
-				console.log(JSON.parse(event.target.result))
-				document.getElementById('drawLoadedGraph').classList.remove('hidden')
-				document.getElementById('successAlert').classList.remove('hidden')
-				localStorage.setItem('loadedGraph', event.target.result)
+				if(file.type === "application/json"){
+					let data = {}
+					// console.log(JSON.parse(event.target.result))
+					let json = JSON.parse(event.target.result)
+					let nodes = []
+					data.nodes = []
+					data.links = json.links.map(function(link){
+						if (!nodes.includes(link.source)){
+							data.nodes.push({
+								r: nodeRadius,
+								index: link.source,
+								label: 'node' + link.source, 
+							})
+							nodes.push(link.source)
+						}
+						if (!nodes.includes(link.target)){
+							data.nodes.push({
+								r: nodeRadius,
+								index: link.target,
+								label: 'node' + link.target, 
+							})
+							nodes.push(link.target)
+						}
+						return link
+					})
+					console.log(data)
+					if(!data){
+						alert('Error to load file')
+						return
+					}
+					localStorage.setItem('loadedGraph', JSON.stringify(data))
+					document.getElementById('drawLoadedGraph').classList.remove('hidden')
+					document.getElementById('successAlert').classList.remove('hidden')
+				}
+				if(file.type === "text/plain"){
+					// console.log(event.target.result.split('\n'))
+					let data = {}
+					data.links = []
+					data.nodes = []
+					let nodes = []
+					for(let line of event.target.result.split('\n')){
+						if(line.includes('#'))
+							continue
+						if(!line[0] || !line[1])
+							continue
+						let s = parseInt(line[0])
+						let t = parseInt(line[1])
+						if(isNaN(s) || isNaN(t))
+							continue;
+						data.links.push({
+							source: s, 
+							target: t, 
+						})
+						if (!nodes.includes(s)){
+							data.nodes.push({
+								r: nodeRadius,
+								index: s,
+								label: 'node' + s, 
+							})
+							nodes.push(s)
+						}
+						if (!nodes.includes(t)){
+							data.nodes.push({
+								r: nodeRadius,
+								index: t,
+								label: 'node' + t, 
+							})
+							nodes.push(t)
+						}
+					}
+					if(!data){
+						alert('Error to load file')
+						return
+					}
+					console.log(data)
+					localStorage.setItem('loadedGraph', JSON.stringify(data))
+					document.getElementById('drawLoadedGraph').classList.remove('hidden')
+					document.getElementById('successAlert').classList.remove('hidden')
+				}
 			}
 			reader.onerror = function (event) {
 				// document.getElementById("fileContents").innerHTML = "error reading file";
