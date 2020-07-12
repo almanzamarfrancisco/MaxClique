@@ -271,11 +271,11 @@
 			.attr('id', 'text' + n.attr('label'))
 			.attr('label', 'textNode' + n.attr('label'))
 			.attr('class', 'textNode')
-			.attr('x', function() { return n.attr('cx') - 15 })
-			.attr('y', function() { return n.attr('cy') })
-			.style('font-size', nodeRadius*0.5)
+			.attr('x', function() { return n.attr('cx') })
+			.attr('y', function() { return n.attr('cy') + Math.floor(nodeRadius)})
+			.style('font-size', nodeRadius)
 			.text(function() {
-				return n.attr('label').charAt(0).toUpperCase() + n.attr('label').slice(1)
+				return n.attr('label').replace('node', '')
 			})
 	}
 	// For getting Neighbors
