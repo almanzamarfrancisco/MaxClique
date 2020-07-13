@@ -9,9 +9,131 @@
 <body>  
 	<div class="container">
 		<input type="radio" name="tabs" id="tab_2"/>
-		<label for="tab_2" class="tabLabel" id="labelTab_2" index="2">
+		<label for="tab_2" class="tabLabel" id="labelTab_2" index="2" style="overflow-y: scroll;">
 			<div class="content">
-				<h1>Conclusions</h1>
+				<h1>Reporte Técnico</h1>
+				<hr>
+				Aquí se muestra el reporte técnico que corresponde al proyecto
+				<h3>Planteamiento del problema</h3>
+				<hr>
+				<p>
+					Clique se refiere a subgrafos en un grafo no dirigido de en el cual cada nodo es adyacente al resto de los nodos del subgrafo. El problema del clique máximo es encontrar el clique con el mayor número de nodos y es un problema NP-Hard. El problema ha tenido varias aplicaciones reales como lo es la búsqueda de comunidades en redes sociales, formación de equipos en redes de expertos, biogenética y detección de anomalías en redes complejas revelando el funcionamiento de estas. Sin embargo, los algoritmos diseñados para el problema del máximo clique son costosos para tratar con redes del mundo real.
+				</p>
+				<p>
+					Para encontrar el máximo clique en un grafo, existen diversos algoritmos con diferentes grados de eficiencia, costo computacional y dificultad de implementación, los cuales serán analizados más adelante con el fin de determinar qué algoritmo será utilizado en la implementación del presente proyecto.
+				</p>
+				<h4>Algoritmo de Bron - Kerbosch</h4>
+				<p>
+					El algoritmo de Bron - Kerbosch es un algoritmo de enumeración (que crea una lista ordenada de todas las soluciones encontradas en el grafo), recursivo y de backtracking, para encontrar cliques máximos en un grafo no direccionado. De manera general dados tres conjuntos de vértices R, P y X, se encuentra el máximo clique que incluye todos los vértices en R, algunos vértices de P y ninguno de los vértices en X. En cada llamada a la función P y X son conjuntos de vértices cuya unión consiste en los vértices que forman parte de un clique cuando son agregados a R. En otras palabras P union X es el conjunto de vértices que son unidos a cada elemento de R. Cuando P y X se encuentran vacíos significa que no hay más elementos que puedan ser agregados a R, de tal forma que R es el máximo clique del grafo.
+				</p>
+				<p>
+					La recursión es iniciada con R y X como un conjunto vacío y P es el conjunto de vértices del grafo. En cada llamada recursiva el algoritmo considera un vértice v de P. Para cada vértice v escogido de P se hace una llamada recursiva en la cual v es agregado a R y en la cual P y X son restringidos a el conjunto de vecinos N(v) de v, el cual encuentra y reporta todas las extensiones para el clique en R que contiene a v. Entonces, mueve a v desde P hacia X para excluirlo de considerarse en futuros cliques y continua con el siguiente vértice v de P.
+				</p>
+				<p>
+					Es posible divisar con la explicación anterior del código que el algoritmo recorre todos los vértices del grafo lo cual lo hace muy costoso en cuanto a tiempo computacional, sin embargo existen mejoras al algoritmo que pueden ahorrar mucho tiempo de procesamiento
+				</p>
+				<pre>
+				algorithm BronKerbosch1(R, P, X) is
+				if P and X are both empty then
+					report R as a maximal clique
+				for each vertex v in P do
+					BronKerbosch1(R ⋃ {v}, P ⋂ N(v), X ⋂ N(v))
+					P := P \ {v}
+					X := X ⋃ {v}
+				</pre>
+				<h4>Algoritmo de Bron - Kerbosch con pivote</h4>
+				<p>
+					Los mismos autores presentaron una variante de su algoritmo la cual introduce un vértice pivote u seleccionado de P union X, de tal forma que cualquier máximo clique debería incluir a u o alguno de sus no vecinos que se encontrasen en esa unión, de lo contrario el clique podría aumentarse agregando a u. Por lo tanto solo u y sus no vecinos serían candidatos a ser examinados para ser agregados a R.
+				</p>
+				<pre>
+					algorithm BronKerbosch2(R, P, X) is
+					if P and X are both empty then
+						report R as a maximal clique
+					choose a pivot vertex u in P ⋃ X
+					for each vertex v in P \ N(u) do
+						BronKerbosch2(R ⋃ {v}, P ⋂ N(v), X ⋂ N(v))
+						P := P \ {v}
+						X := X ⋃ {v}
+				</pre>
+				<h4>Algoritmo RMC (Randomized Maximum Clique)</h4>
+				<p>
+					Este algoritmo es el más eficiente por mucho, la brecha que hay entre el tiempo de procesamiento de este y otros como GRASP es de cientos de segundos, aunque cabe mencionar que este procedimiento se ve auxiliado por al menos 4 algoritmos más, por lo que la implementación es de un nivel superior en comparación con Bron - Kerbosch y el Templado simulado, para fines prácticos analizaremos sólo el algoritmo “principal” y se dará una breve explicación de como los otros 4 algoritmos lo auxilian.
+
+				</p>
+				<p>
+					El algoritmo comienza con una inicialización (línea 1) que provee de un límite inferior (wd), un límite superior (wu), un clique máximo en esa region (Cm), y una variable r. Si r=1 el algoritmo termina y retorna Cm (linea 2). Si no es así el algoritmo aplica una búsqueda binaria para reducir la brecha entre wd y wu dentro de un ciclo while (linea 3 - 17). El ciclo se repetirá siempre que la diferencia entre wd y wu sea mayor que un umbral θ, dicho de otra forma la búsqueda binaria se detendrá si las futuras iteraciones no garantizan que el espacio de búsqueda sea reducido de manera significativa. En cada iteración el objetivo es encontrar un wt-clique. Primero se utiliza un algoritmo aleatorio scSeed que aplica un muestreo uniforme en las aristas de G, encontrando los conjuntos análogos del algoritmo de Bron-Kersboch (P,R,X) a lo cual llamaremos semilla. Para cada semilla “s” aplicaremos una descomposición de núcleo Λ(s) (Un algoritmo que asigna un entero a cada nodo dentro del grafo G indicando que tan conectado está ese nodo con sus vecinos), esto reduce los vértices que no son parte de un wt-clique y mueve los vértices que conectan a todas las demás semillas s. Este resultado nos da un nuevo wu y wd de la función w(s ∪ Λ(s)). Utilizaremos estos límites para actualizar wu y wd en la siguiente iteración, de esta forma lidiamos con los casos en los que no se encuentra una semilla s con un clique máximo en ella, sin embargo para los casos en los que tenemos un clique máximo, hacemos uso de la función tciSeed, en la cual disponemos del algoritmo de “descomposición de entramado” (el cual es un algoritmo para filtrar vértices poco conexos en el espacio de búsqueda) y “coloración de grafos” (que nos permite identificar al clique máximo del espacio de búsqueda, dado que en teoría, ningún vértice adyacente puede compartir el mismo color que alguno de sus vecinos), cabe mencionar que los anteriores 2 algoritmos son eficientes en espacios de búsqueda pequeños. El procedimiento anterior nos permite identificar un nuevo wu y wd excluyendo vértices de nuevo. Al finalizar el ciclo while y la reducción, un máximo clique es buscado de nuevo con el algoritmo divSeed en este nuevo espacio de búsqueda reducido a lo mínimo
+				</p>
+				<p>
+					En resumen el algoritmo RMC encuentra su ventaja en la reducción de espacios de búsqueda generando cada vez grafos más pequeños y más densos en donde se puede garantizar con cierta probabilidad la existencia de un clique máximo global. A diferencia de muchos otros algoritmos de renombre que hacen una búsqueda acelerada en un espacio de búsqueda global y no acotado.
+				</p>
+				<pre>
+			(r, ωc, ωc, Cm) ← Init(G); 
+				if r = 1 then return Cm; 
+					while ωc − ωc ≥ θ do 
+						ωt ← b(ωc + ωc)/2c, ωp ← ωc, ωp ← ωc; 
+						(ωc, ωc, Cm, S) ← scSeed(G, ωt); 
+						switch (states of S, ωc, ωt) 
+							case S = ∅ and ωc ≥ ωt: return Cm; 
+							case S = ∅ and ωc < ωt: ωc ← ωt − 1; break; 
+							case S 6= ∅: 
+							(ωc, ωc, Cm, S) ← tciSeed(G, S, ωt); 
+							switch (states of S, ωc, ωt, ωp, ωp) 
+								case S = ∅ and ωc ≥ ωt: return Cm; 
+								case S = ∅ and ωc < ωt: ωc ← ωt − 1; break; 
+								case ωc = ωp and ωc = ωp: terminate the while loop; 
+							end switch 
+						end switch 
+					end while 
+				ωt ← ωc + 1; 
+				(ωc, ωc, Cm, S) ← scSeed(G, ωt); 
+				if S = ∅ then return Cm; 
+					(ωc, ωc, Cm, S) ← tciSeed(G, S, ωc + 1); 
+					while S 6= ∅ do (ωc, ωc, Cm, S) ← divSeed(G, S, ωc + 1); 
+				return Cm; 
+				</pre>
+				<h4>Algoritmo de templado simulado</h4>
+				<p>
+					Es un algoritmo de búsqueda meta heurística para problemas de optimización global, el objetivo general de este tipo de algoritmos es encontrar una buena aproximación al valor óptimo de una función en un espacio de búsqueda grande. A este valor óptimo se lo denomina "óptimo global".
+				</p>
+				<p>
+					En cada iteración, el método de templado simulado evalúa algunos vecinos del estado actual s y probabilísticamente decide entre efectuar una transición a un nuevo estado s’ o quedarse en el estado s. Típicamente la comparación entre estados vecinos se repite hasta que se encuentre un estado óptimo que minimice, o en este caso maximice, la energía del sistema o hasta que se cumpla cierto tiempo computacional.
+				</p>
+				<p>
+					La analogía de energía en este sistema es una función que evalúa al estado actual s y s’ de tal forma que la energía es el resultado de una función de evaluación convenientemente formulada para optimizar, en palabras concisas, con el fin de optimizar los cliques nuestra energía sería representada por el número de vértices que conforman el máximo clique dentro del vecindario del estado actual s.
+				</p>
+				<p>
+					La probabilidad de hacer la transición al nuevo estado s es una función P(δ E, T) de la diferencia de energía δE=E(s')-E(s) entre los dos estados, y de la variable T, llamada temperatura por analogía con el concepto físico de temperatura.
+				</p>
+				<p>
+					Si δE es negativo, es decir, la transición disminuye la energía, el movimiento es aceptado con probabilidad P=1. Es importante remarcar que la condición de que el sistema siempre pase a un sistema de menor energía cuando se encuentra uno no es en absoluto necesaria para el éxito del método. Cuando δE es positivo la probabilidad de transición P es siempre distinta de cero, aún , es decir, el sistema puede pasar a un estado de mayor energía (peor solución) que el estado actual. Esta propiedad impide que el sistema se quede atrapado en un óptimo local.
+				</p>
+				<pre>
+				s := GeneraUnaSolucionInicial();
+				T := T0; g := 0;
+				mientras (CondicionesParoNoActivas(g, T)) hacer
+				s ′ := TomaUnV ecinoAleatorioDe(s);
+				si ( f(s ′ ) < f(s)) 
+				s := s ′ ; 
+				o bien
+				si (Random(0, 1.0) < exp((f(s) − f(s ′ ))/T))
+				s := s ′ ;
+				fin si;
+				fin si;
+				g := g + 1; T := Actualiza(g, T);
+				fin mientras 
+
+				</pre>
+				<h3>Conclusiones</h3>
+				<hr>
+				<p>
+					Al término del proyecto podemos concluir que el campo de análisis de grafos es enorme y con el correcto nivel de abstracción existen múltiples casos prácticos del mundo actual que se podrían solucionar a través de un análisis de grafos, existe mucha información que se puede obtener de ellos, pero a medida que avanzamos, la forma de analizarlos se vuelve compleja. Como pudimos observar con anterioridad, en la síntesis, existen algoritmos muy eficaces para grafos pequeños y es que no todos los problemas del mundo actual tienen la escala de una red social como Facebook o las interacciones en Twitter. Cabe resaltar que incluso para el análisis de grafos masivos, la técnica es dividir el problema, excluir vértices sin relación o sin información necesaria y mediante los algoritmos para “grafos pequeños” llevar a cabo nuestro análisis.
+				</p>
+				<p>
+					Al término del proyecto podemos concluir que el campo de análisis de grafos es enorme y con el correcto nivel de abstracción existen múltiples casos prácticos del mundo actual que se podrían solucionar a través de un análisis de grafos, existe mucha información que se puede obtener de ellos, pero a medida que avanzamos, la forma de analizarlos se vuelve compleja. Como pudimos observar con anterioridad, en la síntesis, existen algoritmos muy eficaces para grafos pequeños y es que no todos los problemas del mundo actual tienen la escala de una red social como Facebook o las interacciones en Twitter. Cabe resaltar que incluso para el análisis de grafos masivos, la técnica es dividir el problema, excluir vértices sin relación o sin información necesaria y mediante los algoritmos para “grafos pequeños” llevar a cabo nuestro análisis.
+				</p>
+				<p>
+					Creemos que es importante enfatizar la importancia de observar un problema desde diferentes puntos de vista, mientras que un algoritmo nos da un acercamiento a la solución valioso, relativamente veloz y de sencilla implementación como lo es el “templado simulado”, existe otro (RMC) que con una velocidad increíble garantiza la mejor solución a cambio de una implementación costosa, dependiendo del desafío, existen algoritmos a la talla de cada uno.
+				</p>
 			</div>
 		</label>
 		<input type="radio" name="tabs" id="tab_1" />
@@ -80,6 +202,7 @@
 				<div id="Content">
 					<div class="boxed">
 						<div id="lipsum">
+							<h3>Introduction - Theoretical Marco</h3>
 							<p>
 								The term "clique" comes from the English word clique, which defines a group of people who share common interests. This problem considers as an analogy that people would be the vertices and the common interests, the edges. When they all share the same interest, they form a complete graph, that is, they form a clique.
 							</p>
