@@ -14,15 +14,21 @@
 				<h1>Reporte Técnico</h1>
 				<hr>
 				Aquí se muestra el reporte técnico que corresponde al proyecto
-				<h3>Planteamiento del problema</h3>
 				<hr>
+				<h2>1. Marco Teorico</h2>
+				<h3>1.1. Introduccion</h3>
 				<p>
-					Clique se refiere a subgrafos en un grafo no dirigido de en el cual cada nodo es adyacente al resto de los nodos del subgrafo. El problema del clique máximo es encontrar el clique con el mayor número de nodos y es un problema NP-Hard. El problema ha tenido varias aplicaciones reales como lo es la búsqueda de comunidades en redes sociales, formación de equipos en redes de expertos, biogenética y detección de anomalías en redes complejas revelando el funcionamiento de estas. Sin embargo, los algoritmos diseñados para el problema del máximo clique son costosos para tratar con redes del mundo real.
+				En teoría de grafos se conoce a un clique como un conjunto de vértices G, tal que todo par de vértices distintos son adyacentes. En otras palabras, un clique es un subgrafo en el que cada vértice está conectado a todos los demás vértices del subgrafo. Esto equivale a decir que el subgrafo de G es un grafo completo.
 				</p>
 				<p>
-					Para encontrar el máximo clique en un grafo, existen diversos algoritmos con diferentes grados de eficiencia, costo computacional y dificultad de implementación, los cuales serán analizados más adelante con el fin de determinar qué algoritmo será utilizado en la implementación del presente proyecto.
+				El problema ha tenido varias aplicaciones reales como lo es la búsqueda de comunidades en redes sociales, formación de equipos en redes de expertos, biogenética y detección de anomalías en redes complejas revelando el funcionamiento de estas. Sin embargo, los algoritmos diseñados para el problema del máximo clique son costosos para tratar con redes del mundo real.
 				</p>
-				<h4>Algoritmo de Bron - Kerbosch</h4>
+				<p>
+				Para encontrar el máximo clique en un grafo, existen diversos algoritmos con diferentes grados de eficiencia, costo computacional y dificultad de implementación, los cuales serán analizados más adelante con el fin de determinar qué algoritmo será utilizado en la implementación del presente proyecto.
+				</p>
+				<h2> Algoritmo implementado</h2>
+				<p>Actualmente la interfaz ejecuta el algoritmo de Bron - Kerbosch con pivote, dado que es una variante del algoritmo de Bron - Kerbosch enseguida explicaremos la primera versión después la variante con pivote.</p>
+				<h3>1.2. Algoritmo de Bron - Kerbosch</h3>
 				<p>
 					El algoritmo de Bron - Kerbosch es un algoritmo de enumeración (que crea una lista ordenada de todas las soluciones encontradas en el grafo), recursivo y de backtracking, para encontrar cliques máximos en un grafo no direccionado. De manera general dados tres conjuntos de vértices R, P y X, se encuentra el máximo clique que incluye todos los vértices en R, algunos vértices de P y ninguno de los vértices en X. En cada llamada a la función P y X son conjuntos de vértices cuya unión consiste en los vértices que forman parte de un clique cuando son agregados a R. En otras palabras P union X es el conjunto de vértices que son unidos a cada elemento de R. Cuando P y X se encuentran vacíos significa que no hay más elementos que puedan ser agregados a R, de tal forma que R es el máximo clique del grafo.
 				</p>
@@ -41,7 +47,7 @@
 					P := P \ {v}
 					X := X ⋃ {v}
 				</pre>
-				<h4>Algoritmo de Bron - Kerbosch con pivote</h4>
+				<h3>1.3. Algoritmo de Bron - Kerbosch con pivote</h3>
 				<p>
 					Los mismos autores presentaron una variante de su algoritmo la cual introduce un vértice pivote u seleccionado de P union X, de tal forma que cualquier máximo clique debería incluir a u o alguno de sus no vecinos que se encontrasen en esa unión, de lo contrario el clique podría aumentarse agregando a u. Por lo tanto solo u y sus no vecinos serían candidatos a ser examinados para ser agregados a R.
 				</p>
@@ -55,7 +61,17 @@
 						P := P \ {v}
 						X := X ⋃ {v}
 				</pre>
-				<h4>Algoritmo RMC (Randomized Maximum Clique)</h4>
+				<h3>1.4. Complejidad algorítmica de Bron-Kerbosch</h3>
+				<p>	
+				A diferencia de otros algoritmos para el problema del clique, el algoritmo de Bron-Kerbosch 
+				no es un algoritmo sensible a su salida (que el tiempo de ejecución depende del tamaño de la 
+				salida generada), es decir no se ejecuta en tiempo polinomial dependiendo del máximo clique 
+				generado. Aun así es eficiente en un sentido de “peor caso”, ya que cualquier grafo de n 
+				vértices tiene máximo 3<sup>n/3</sup> cliques máximos y en una ejecución bajo el escenario del peor 
+				caso, con una estrategia de pivote, la complejidad del algoritmo es O(3<sup>n/3</sup>)
+				</p>
+				<h2>2. Analisis de Algoritmos encontrados en la lectura</h2>
+				<h3>2.1. Algoritmo RMC (Randomized Maximum Clique)</h3>
 				<p>
 					Este algoritmo es el más eficiente por mucho, la brecha que hay entre el tiempo de procesamiento de este y otros como GRASP es de cientos de segundos, aunque cabe mencionar que este procedimiento se ve auxiliado por al menos 4 algoritmos más, por lo que la implementación es de un nivel superior en comparación con Bron - Kerbosch y el Templado simulado, para fines prácticos analizaremos sólo el algoritmo “principal” y se dará una breve explicación de como los otros 4 algoritmos lo auxilian.
 
@@ -91,7 +107,7 @@
 					while S 6= ∅ do (ωc, ωc, Cm, S) ← divSeed(G, S, ωc + 1); 
 				return Cm; 
 				</pre>
-				<h4>Algoritmo de templado simulado</h4>
+				<h3>2.2. Algoritmo de templado simulado</h3>
 				<p>
 					Es un algoritmo de búsqueda meta heurística para problemas de optimización global, el objetivo general de este tipo de algoritmos es encontrar una buena aproximación al valor óptimo de una función en un espacio de búsqueda grande. A este valor óptimo se lo denomina "óptimo global".
 				</p>
@@ -121,7 +137,9 @@
 				fin si;
 				g := g + 1; T := Actualiza(g, T);
 				fin mientras 
-
+				
+				<h3>Pruebas</h3>
+				<p>Dado que poseemos una interfaz bastante intuitiva decidimos por este momento dejar ambos algoritmos implementados para que analicen los grafos, tomamos el tiempo que toma para que cada uno encuentre el máximo clique y lo imprimos en la pantalla, para que cada vez que alguien cargue un grafo pueda ver de manera práctica los resultados al analizarlo con cada algoritmo.</p>
 				</pre>
 				<h3>Conclusiones</h3>
 				<hr>
@@ -185,6 +203,8 @@
 						<p id="maximalCliqueIndex" style="margin: 0"></p>
 						<div id="cliquesButtons" style="max-height: 60px; overflow-y: scroll;"></div>
 						<h1 id="selectedClique">&nbsp;</h1>
+						<h4 id="ik">&nbsp;</h4>
+						<h4 id="bk">&nbsp;</h4>
 					</div>
 				</div>
 				<div id="graph"></div>    

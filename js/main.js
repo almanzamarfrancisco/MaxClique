@@ -72,8 +72,15 @@
 		getAllNodesNeighborhood() // Fill neighborhood
 		let R = [] // Response
 		let X = [] // Auxiliar
-		// BronKerbosh(R, [...globalData.nodes], X)
+		let startbk = performance.now();
+		BronKerbosh(R, [...globalData.nodes], X)
+		let bktime = performance.now(); - startbk;
+		let startik=performance.now();
 		IK_(R, [...globalData.nodes], X)
+		let iktime = performance.now(); - startik;
+		document.getElementById('ik').innerText='Tiempo con pivote: '+iktime.toFixed(3)+' ms'
+		document.getElementById('bk').innerText='Tiempo sin pivote: '+bktime.toFixed(3)+' ms'
+		console.log(iktime)
 		// console.log(foundCliques)
 		fillMaximalClique()
 		document.querySelector("#dowloadActualGraphButton").// Dowload button
